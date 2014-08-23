@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>??? - LD30 entry - theme: connected worlds</title>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,100&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <div class="loading-screen screen">
+    </div>
+    <div class="menu-screen screen screen-active">
+        <ul>
+            <li class="link">begin</li>
+            <li class="link">about</li>
+        </ul>
+    </div>
+    <footer>
+        ld30. theme: connected worlds. mrtambourine &copy; 2014
+    </footer>
+    <script>
+        var port = (location.hostname === "localhost") ? "8080" : "8000";
+        var socket = io.connect('ws://' + location.hostname + ':' + port);
+        var player = {};
+        var game = {};
+
+        window.addEventListener("load", function (e) {
+            var loadQueue = new createjs.LoadQueue(true);
+
+            loadQueue.loadFile({
+                src: "manifest.json",
+                type: createjs.LoadQueue.MANIFEST
+            });
+
+            loadQueue.on("fileload", function (e) {
+                /*if (e.item.type === createjs.LoadQueue.IMAGE) {
+                    var baseTexture = new PIXI.BaseTexture(e.result);
+                    var texture = new PIXI.Texture(baseTexture);
+                    PIXI.Texture.addTextureToCache(texture, e.item.id);
+                }*/
+            });
+
+            loadQueue.on("progress", function (e) {
+                //loading_progress.style.width =  (e.progress * 300) + "px";
+            });
+
+            loadQueue.on("complete", function (e) {
+                taste.changeState("welcome");
+            });
+        });
+    </script>
+</body>
+</html>
