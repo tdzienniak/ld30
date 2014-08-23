@@ -4,24 +4,33 @@
     <meta charset="UTF-8">
     <title>??? - LD30 entry - theme: connected worlds</title>
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,100&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Inconsolata:400,700&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
     <div class="loading-screen screen">
     </div>
-    <div class="menu-screen screen screen-active">
-        <ul>
-            <li class="link">begin</li>
-            <li class="link">about</li>
+    <div class="menu-screen screen">
+        <ul class="menu-list">
+            <li id="begin-link" class="link">begin</li>
+            <!-- <li id="about-link" class="link">about</li> -->
         </ul>
+    </div>
+    <div class="gameplay-screen screen">
+        <div class="world-wrapper">
+            <table class="world-table">
+
+            </table>
+        </div>
     </div>
     <footer>
         ld30. theme: connected worlds. mrtambourine &copy; 2014
     </footer>
+    <script src="js/lib/preloadjs-0.4.1.min.js"></script>
+    <script src="js/lib/jquery-2.1.1.min.js"></script>
     <script>
-        var port = (location.hostname === "localhost") ? "8080" : "8000";
-        var socket = io.connect('ws://' + location.hostname + ':' + port);
-        var player = {};
+        var WORLD = {};
+        var LEVELS = {};
         var game = {};
 
         window.addEventListener("load", function (e) {
@@ -33,6 +42,9 @@
             });
 
             loadQueue.on("fileload", function (e) {
+                if (e.item.type === createjs.LoadQueue.JSON && e.item.src.substr(0, 5) === "level") {
+                    LEVELS[e.result.id] = parseLevel(e.result);
+                }
                 /*if (e.item.type === createjs.LoadQueue.IMAGE) {
                     var baseTexture = new PIXI.BaseTexture(e.result);
                     var texture = new PIXI.Texture(baseTexture);
@@ -45,7 +57,9 @@
             });
 
             loadQueue.on("complete", function (e) {
-                taste.changeState("welcome");
+                console.log("OK");
+                game = new Entropy.Game("initialize");
+                //taste.changeState("welcome");
             });
         });
     </script>

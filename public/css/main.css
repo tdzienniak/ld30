@@ -1,19 +1,63 @@
-html, body {
+html {
     height: 100%;
-    width: 100%;
-    margin: 0;
     padding: 0;
+    margin: 0;
+}
+
+body {
+    padding: 0;
+    margin: 0;
 }
 
 .screen {
     width: 800px;
     height: 600px;
-    margin: 0 auto;
+    margin: 30px auto;
     display: none;
+    box-shadow: 0px 0px 4px black;
+    position: relative;
 }
 
 .screen-active {
-    display: block;
+    /*display: block;*/
+}
+
+
+.menu-list {
+    list-style-type: none;
+    margin: 30px;
+    padding: 0;
+    position: absolute;
+    bottom: 0px;
+    text-align: left;
+    font-family: 'Roboto';
+    font-weight: 100;
+    font-size: 15pt;
+    
+}
+
+.link {
+    cursor: pointer;
+}
+
+.link:hover {
+    font-weight: 300;
+}
+
+.world-wrapper {
+    font-family: 'Inconcolata', monospace;
+    font-size: 17pt;
+    padding: 20px 20px;
+}
+
+.world-table {
+    border-spacing: 0px;
+    border-collapse: separate;
+}
+
+.world-table td {
+    border-spacing: none;
+    padding: 0;
 }
 
 footer {

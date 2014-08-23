@@ -1,1 +1,14 @@
-manifest.json
+{
+    "manifest": [
+        "js/lib/entropy.js",
+        "js/other/func.js",
+        "js/other/tiles.js",
+        "js/component/color.js",
+        "js/component/position.js",
+        "js/component/symbol.js",
+        "js/entity/player.js",
+        "js/state/gameplay.js",
+        "js/state/initialize.js",
+        "js/state/menu.js"
+    ]
+}
