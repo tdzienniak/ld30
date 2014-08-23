@@ -27,7 +27,7 @@ Entropy.Game.State({
         
         console.log('gameplay');
 
-        var level = LEVELS['level-1'];
+        var level = LEVELS['level-2'];
 
         var width = level.world[0].length;
         var height = level.world.length;

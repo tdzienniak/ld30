@@ -5,6 +5,7 @@
         "js/other/tilemapper.js",
         "js/other/tiles.js",
         "js/level/level1.json",
+        "js/level/level2.json",
         "js/component/color.js",
         "js/component/offset.js",
         "js/component/position.js",
