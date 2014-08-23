@@ -3,8 +3,10 @@ Entropy.Game.State({
     initialize: function (game, done) {
         console.log('initialize');
 
-        Entropy.Const('WORLD_WIDTH', 50);
-        Entropy.Const('WORLD_HEIGHT', 20);
+        Entropy.Const('HORIZONTAL_PADDING', 2);
+        Entropy.Const('VERTICAL_PADDING', 2);
+        Entropy.Const('FOV_WIDTH', 50);
+        Entropy.Const('FOV_HEIGHT', 20);
 
         game.changeState('menu');
         done();

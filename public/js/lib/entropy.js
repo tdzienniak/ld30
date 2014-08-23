@@ -1420,7 +1420,8 @@ var root = {};
     var _is_running = false;
     var _current_FPS = FPS;
     var _raf_id = -1;
-
+    var _desired_delta = 1000 / FPS;
+    var _delta_sum = 0;
     var event = {};
 
     function Ticker (game) {
@@ -1434,6 +1435,7 @@ var root = {};
     Utils.extend(Ticker.prototype, {
         setFPS: function (fps) {
             FPS = fps || FPS;
+            _desired_delta = 1000 / FPS;
         },
         getFPS: function () {
             return FPS;
@@ -1493,6 +1495,17 @@ var root = {};
             }
 
             _last_time_value = time;
+
+            if (FPS !== 60) {
+                _delta_sum += delta;
+
+                if (_delta_sum < _desired_delta) {
+                    return;
+                } else {
+                    delta = _delta_sum;
+                    _delta_sum = 0;
+                }
+            }
 
             if (_ticks % FPS === 0) {
                 _current_FPS = 1000 / delta;

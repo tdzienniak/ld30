@@ -1,7 +1,9 @@
 var TILES = {
     //ground tiles
-    0: '2588', // █ - empty space
-    1: '00B7', // · - neutral ground
+    // 0: '2588', // █ - empty space
+    // 1: '00B7', // · - neutral ground
+    0: '█', // █ - empty space
+    1: '·', // · - neutral ground
     2: '2588',
     3: '2588',
     4: '2588',
@@ -12,21 +14,26 @@ var TILES = {
     9: '2588',
 
     //walls
-    d: '2563', // ╣ - box drawings double vertical and left
-    v: '2551', // ║ - vertical
-    e: '2557', // ╗ - down and left
-    c: '255D', // ╝ - up and left
-    z: '255A', // ╚ - up and right
-    q: '2554', // ╔ - down and right
-    x: '2569', // ╩ - up and horizontal
-    w: '2566', // ╦ - box drawings double down and horizontal
-    a: '2560', // ╠ - box drawings double vertical and right
-    h: '2550', // ═ - box drawings double horizontal
-    s: '256C', // ╬ -box drawings double vertical and horizontal
+    d: '╣', // ╣ - box drawings double vertical and left
+    v: '║', // ║ - vertical
+    e: '╗', // ╗ - down and left
+    c: '╝', // ╝ - up and left
+    z: '╚', // ╚ - up and right
+    q: '╔', // ╔ - down and right
+    x: '╩', // ╩ - up and horizontal
+    w: '╦', // ╦ - box drawings double down and horizontal
+    a: '╠', // ╠ - box drawings double vertical and right
+    h: '═', // ═ - box drawings double horizontal
+    s: '╬', // ╬ -box drawings double vertical and horizontal
 
     //character tiles
-    o: '0040', // @ - character entity
+    o: '@', // @ - character entity
+    // o: '0040', // @ - character entity
+
 
     //trees
-    t: '005E', // ^ - tree
+    //t: '005E', // ^ - tree
+    t: '^', // ^ - tree
+
+    r: '≈' // river
 };

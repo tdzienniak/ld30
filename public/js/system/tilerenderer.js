@@ -6,35 +6,48 @@ Entropy.Engine.System({
 
     },
     update: function (delta) {
-        var FoV = {
-            fromX: 0,
-            toX: 49,
-            fromY: 0,
-            toY: 19
-        };
-
+        var fov = this.engine.getFamily("FoV").one().components;
         var tiles = this.engine.getFamily('Tiles');
         var player = this.engine.getFamily('Players').one().components;
 
+        this.clearFoV();
+
         tiles.iterate(function (t, tc) {
-           this.renderTile(tc, FoV);
+           this.renderTile(tc, fov);
         }, this);
 
-        this.renderTile(player, FoV);
+        this.renderTile(player, fov);
     },
     renderTile: function (components, FoV) {
+       
+
+        if (this.isInFoV(components, FoV)) {
+            var x = components.position.x - FoV.offset.x;
+            var y = components.position.y -  FoV.offset.y;
+
+            var tile = TILES[components.tile.sequence[0]] || TILES[1];
+
+            WORLD[x][y].innerText = tile;
+        }
+    },
+    isInFoV: function (components, FoV) {
         var x = components.position.x;
         var y = components.position.y;
 
-        if (
-            x >= FoV.fromX &&
-            x <= FoV.toX &&
-            y >= FoV.fromY &&
-            y <= FoV.toY
-        ) {
-            var tile = TILES[components.tile.sequence[0]] || TILES[1];
+        var fromX = FoV.offset.x;
+        var toX = FoV.offset.x + Entropy.FOV_WIDTH;
+        var fromY = FoV.offset.y;
+        var toY = FoV.offset.y + Entropy.FOV_HEIGHT;
 
-            WORLD[x][y].html('&#x' + tile + ';');
+        //console.log(fromX, toX, fromY, toY)
+
+        return x >= fromX && x < toX && y >= fromY && y < toY;
+    },
+    clearFoV: function () {
+        for (var x = 0; x < Entropy.FOV_WIDTH; x++) {
+            for (var y = 0; y < Entropy.FOV_HEIGHT; y++) {
+                WORLD[x][y].innerText = TILES[1];
+            }
         }
     }
 });
