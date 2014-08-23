@@ -1,9 +1,9 @@
 Entropy.Engine.Entity({
-    name: "Player",
-    family: "Players|Tiles",
+    name: "Tree",
+    family: "Tiles|Trees",
     create: function (game, x, y) {
         this.add("Position", x, y)
-            .add("Tile", 'o', ['o'])
+            .add("Tile", 't', ['t'])
             .add("Color", '#000000');
     }
 });

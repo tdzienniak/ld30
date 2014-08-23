@@ -42,8 +42,11 @@
             });
 
             loadQueue.on("fileload", function (e) {
-                if (e.item.type === createjs.LoadQueue.JSON && e.item.src.substr(0, 5) === "level") {
-                    LEVELS[e.result.id] = parseLevel(e.result);
+                 console.log(e.item.src)
+                if (e.item.type === createjs.LoadQueue.JSON && e.item.src.substr(0, 8) === "js/level") {
+                    console.log(e.result.id)
+                    LEVELS[e.result.id] = e.result;
+
                 }
                 /*if (e.item.type === createjs.LoadQueue.IMAGE) {
                     var baseTexture = new PIXI.BaseTexture(e.result);

@@ -2,11 +2,18 @@
     "manifest": [
         "js/lib/entropy.js",
         "js/other/func.js",
+        "js/other/tilemapper.js",
         "js/other/tiles.js",
+        "js/level/level1.json",
         "js/component/color.js",
         "js/component/position.js",
         "js/component/symbol.js",
+        "js/component/tile.js",
+        "js/entity/emptyground.js",
         "js/entity/player.js",
+        "js/entity/tree.js",
+        "js/system/playercontrol.js",
+        "js/system/tilerenderer.js",
         "js/state/gameplay.js",
         "js/state/initialize.js",
         "js/state/menu.js"

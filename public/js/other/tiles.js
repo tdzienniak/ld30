@@ -27,4 +27,6 @@ var TILES = {
     //character tiles
     o: '0040', // @ - character entity
 
+    //trees
+    t: '005E', // ^ - tree
 };

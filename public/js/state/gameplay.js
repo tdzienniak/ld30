@@ -26,6 +26,26 @@ Entropy.Game.State({
         }
         
         console.log('gameplay');
+
+        var level = LEVELS['level-1'];
+
+        var width = level.world[0].length;
+        var height = level.world.length;
+
+        for (var x = 0; x < width; x++) {
+            for (var y = 0; y < height; y++) {
+                var symbol = level.world[y][x];
+                game.engine.create(TILE_MAPPER[symbol] || 'EmptyGround', x, y);
+            }
+        }
+
+        game.engine.create("Player", 5, 5);
+
+        game.engine.addSystem("PlayerControl", 0);
+        game.engine.addSystem("TileRenderer", 1);
+
+        game.start();
+
         done();
     },
     onEnter: function (game, done) {

@@ -23,7 +23,7 @@ var manifest = {
     ]
 };
 
-['other', 'component', 'entity', 'system', 'state'].forEach(function (dir) {
+['other', 'level', 'component', 'entity', 'system', 'state'].forEach(function (dir) {
     manifest.manifest = manifest.manifest.concat(fs.readdirSync('./public/js/' + dir).map(function (file) {
         return 'js/' + dir + '/' + file;
     }));
