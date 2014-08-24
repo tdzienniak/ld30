@@ -3,7 +3,14 @@ Entropy.Game.State({
     initialize: function (game, done) {
         done();
     },
-    onEnter: function (game, done) {
+    onEnter: function (game, ending, done) {
+        game.pause();
+        if (ending === 'bad') {
+            game.changeState('outro_bad');
+        } else {
+            game.changeState('outro_good');
+        }
+
         done();
     },
      onExit: function (game, done) {

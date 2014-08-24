@@ -26,6 +26,9 @@ var TILES = {
     a: '╠', // ╠ - box drawings double vertical and right
     h: '═', // ═ - box drawings double horizontal
     s: '╬', // ╬ -box drawings double vertical and horizontal
+    '╤': '╤',
+    '│': '│',
+    '╧': '╧',
 
     //character tiles
     o: '@', // @ - character entity
@@ -66,7 +69,9 @@ var TILE_SEQUENCE = {
     '(': ['(', '|', ')', '|'],
     ')': [')', '|', '(', '|'],
     ']': [']', '|', '[', '|'],
-    '[': ['[', '|', ']', '|']
+    '[': ['[', '|', ']', '|'],
+    '{': ['{', '|', '}', '|'],
+    '}': ['}', '|', '{', '|']
 };
 
 

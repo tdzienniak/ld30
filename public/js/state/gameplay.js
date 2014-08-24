@@ -48,6 +48,15 @@ Entropy.Game.State({
         game.engine.create("Key", 83, 7, 'The blue box key');
         game.engine.create("Box", 103, 16, 'The blue box');
 
+        game.engine.create("Info", 93, 15, 'My house');
+        game.engine.create("Info", 148, 16, 'Disco');
+
+        game.engine.create("Barman", 144, 11);
+        //144, 11
+
+        game.engine.create("Hooker", 88, 20);
+        //88, 20
+
         game.engine.addSystem("PlayerControl", 0);
         game.engine.addSystem("PlayerPosition", 1);
         game.engine.addSystem("LabelDisplay", 2);
@@ -59,6 +68,24 @@ Entropy.Game.State({
         game.ticker.setFPS(15);
 
         game.start();
+
+        $(window).on('keyup', function (e) {
+
+            if (e.keyCode === 73) {
+                console.log('koko')
+
+                if (game.currentState() === 'gameplay') {
+                    game.pause();
+                    game.changeState('inventory');
+                    return;
+                }
+
+                if (game.currentState() === 'inventory') {
+                    game.changeState('gameplay');
+                    return;
+                }
+            }
+        });
 
         done();
     },

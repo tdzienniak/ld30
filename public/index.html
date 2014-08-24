@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>??? - LD30 entry - theme: connected worlds</title>
+    <title>World B - LD30 entry - theme: connected worlds</title>
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,100&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Inconsolata:400,700&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="css/main.css">
@@ -22,10 +22,35 @@
                 <p>It may sound weird, but this little box is the connection to the other world. Yes, I mean parallel universe. Every item you put in this box will be available in that other world (I'll call it world B) and vice versa.</p>
                 <p>Long time ago I made a deal with a man owning that box in world B, that he will tell his grondson about it in the same time, I will tell mine.</p>
                 <p>Now you know, go and open the box - the key is in the forest.</p>
-                <p>Your loving grandpa,<br /><i>Bob</i></p>
+                <p>Your loving uncle,<br /><i>Bob</i></p>
                 <div>
-                    <span class="link" id="skip-intro"><b>ok, i will find a key</b></span>
+                    <span class="link" id="skip-intro"><b>Ok, I will find that key.</b></span>
                 </div>
+            </div>
+
+        </div>
+        <div class="outro-screen screen bad-ending">
+            <div class="outro-message">
+                <p>Well, you made it - you gave people from world B a <b>nuclear bomb</b>.<br />
+                They didn't know a nuclear bomb before, now they do.<br />
+                From this moment, they are able to kill 100 thousand people in a blink of an eye.<br />
+                What have you been thinking? That people from world B are different from us?</p>
+                <p>Smarter?</p>
+                <p>Better?</p>
+                <p>More human?</p>
+                <p>No, humans are always the same, no mather what time and universe it is...</p>
+                <p><b>GAME OVER</b></p>
+            </div>
+
+        </div>
+        <div class="outro-screen screen good-ending">
+            <div class="outro-message">
+                <p>You gave nuclear bomb to a hooker.<br />
+                Not very clever idea, but better than sending it to world B.<br />
+                Those hooker will propably bury it somwhere thinking that this is something precious,<br>
+                and you will get some free... joy. Everybody is happy!
+                </p>
+                <p><b>GOOD JOB!</b></p>
             </div>
 
         </div>
@@ -41,7 +66,10 @@
                     <span id="player-position-x"></span>, <span id="player-position-y"></span><span id="label-text"></span>
                 </div>
                 <table class="world-table"></table>
-
+                <div id="dialogue-box">
+                    <p><b><span id="dialogue-person"></span>: </b><span id="dialogue-text"></span></p>
+                    <p style="text-align: right;"><span class="link" id="dialogue-next"><b>continue</b></span></p>
+                </div>
             </div>
         </div>
         <div class="fishing-screen screen">
@@ -62,6 +90,18 @@
                 </div>
             </div>
         </div>
+         <div class="inventory-screen screen">
+            <div class="inventory-wrapper">
+                <p><b>You have:</b><p>
+                <p id="inventory-box"></p>
+            </div>
+        </div>
+        <div class="note-screen screen">
+            <div class="note-wrapper">
+                <p>The guy behind a bar will know.</p>
+                <span class="link" id="read-note"><b>I've read.</b></span>
+            </div>
+        </div>
     </div>
     
     <footer>
@@ -73,7 +113,6 @@
         var WORLD = {};
         var LEVELS = {};
         var FISHING_IN_PROGRESS = false;
-        var QUEST = {};
         var game = {};
 
         window.addEventListener("load", function (e) {

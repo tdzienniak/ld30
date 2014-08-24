@@ -72,14 +72,14 @@ body {
     font-size: 18pt;
 }
 
-.intro-message {
+.intro-message, .outro-message {
     width: 50%;
     font-family: 'Roboto';
     font-weight: 300;
     font-size: 15pt;
 }
 
-.intro-message div {
+.intro-message div, .outro-message div {
     text-align: center;
     padding: 50px 0;
 }
@@ -99,17 +99,35 @@ body {
     font-size: 17pt;
 }
 
-.fishing-screen, .choping-screen {
+#dialogue-box {
+    display: none;
+    padding: 0 20px;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    left: 20px;
+    background: white;
+    box-shadow: 0px 0px 5px black;
+    font-family: 'Roboto';
+    font-weight: 300;
+    font-size: 15pt;
+}
+
+.fishing-screen, .choping-screen, .note-screen, .inventory-scrren {
     background: rgba(255, 255, 255, 0.3);
 }
 
-.fishing-wrapper, .choping-wrapper {
+.fishing-wrapper, .choping-wrapper, .note-wrapper, .inventory-wrapper {
     box-shadow: 0px 0px 5px black;
     padding: 50px;
     background: white;
     font-family: 'Roboto';
     font-weight: 300;
     font-size: 13pt;
+}
+
+.inventory-wrapper {
+    padding: 30px;
 }
 
 #fishing-text, #choping-text {
@@ -141,6 +159,10 @@ body {
     width: 0px;
     height: 50px;
     background: rgb(100, 100, 100); 
+}
+
+#inventory-box {
+
 }
 
 .choping-threshold {
