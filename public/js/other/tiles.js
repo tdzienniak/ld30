@@ -2,6 +2,7 @@ var TILES = {
     //ground tiles
     // 0: '2588', // █ - empty space
     // 1: '00B7', // · - neutral ground
+    ' ': '·',
     0: '█', // █ - empty space
     1: '·', // · - neutral ground
     2: '2588',
@@ -27,7 +28,7 @@ var TILES = {
     s: '╬', // ╬ -box drawings double vertical and horizontal
 
     //character tiles
-    //o: '@', // @ - character entity
+    o: '@', // @ - character entity
     // o: '0040', // @ - character entity
 
     //paths
@@ -35,12 +36,22 @@ var TILES = {
     k: '▒',
     l: '▓',
 
-    '/': ['/', '|', '\\', '|'],
-    '|': ['|', '\\', '|', '/'],
-    //'\\': ['\\', '|', '/', '|'],
+    '/': '/',
+    '|': '|',
+    '\\': '\\',
     //trees
     //t: '005E', // ^ - tree
     t: '^', // ^ - tree
 
-    r: '≈' // river
+    r: '≈', // river
+    '~': '~',
 };
+
+var TILE_SEQUENCE = {
+    '/': ['/', '|', '\\', '|'],
+    '|': ['|', '\\', '|', '/'],
+    '\\': ['\\', '|', '/', '|'],
+};
+
+
+

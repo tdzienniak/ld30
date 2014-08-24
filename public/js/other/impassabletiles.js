@@ -1,1 +1,1 @@
-var IMPASSABLE_TILES = ['d', 'v', 'e', 'c', 'z', 'q', 'x', 'w', 'a', 'h', 's', 't', 'r'];
+var IMPASSABLE_TILES = ['d', 'v', 'e', 'c', 'z', 'q', 'x', 'w', 'a', 'h', 's', 't', 'r', '0', '~', '/', '|', 'o', '\\'];

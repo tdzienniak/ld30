@@ -1,6 +1,8 @@
 var TILE_MAPPER = {
     't': 'Tree',
-    '0': 'EmptyGround',
+    '1': 'EmptyGround',
+    ' ': 'EmptyGround',
+    '0': 'Box',
     'o': 'Player',
     'd': 'Wall',
     'v': 'Wall',
@@ -17,6 +19,7 @@ var TILE_MAPPER = {
     'k': 'Path',
     'l': 'Path',
     'r': 'River',
+    '~': 'River',
     '/': 'Dancer',
     '|': 'Dancer',
     '\\': 'Dancer',

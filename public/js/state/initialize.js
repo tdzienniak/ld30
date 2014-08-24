@@ -3,8 +3,8 @@ Entropy.Game.State({
     initialize: function (game, done) {
         console.log('initialize');
 
-        Entropy.Const('HORIZONTAL_PADDING', 2);
-        Entropy.Const('VERTICAL_PADDING', 2);
+        Entropy.Const('HORIZONTAL_PADDING', 4);
+        Entropy.Const('VERTICAL_PADDING', 4);
         Entropy.Const('FOV_WIDTH', 60);
         Entropy.Const('FOV_HEIGHT', 25);
 

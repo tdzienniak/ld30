@@ -14,6 +14,7 @@
         "js/component/position.js",
         "js/component/symbol.js",
         "js/component/tile.js",
+        "js/entity/box.js",
         "js/entity/dancer.js",
         "js/entity/emptyground.js",
         "js/entity/fov.js",
@@ -29,6 +30,7 @@
         "js/system/tilerenderer.js",
         "js/state/gameplay.js",
         "js/state/initialize.js",
+        "js/state/intro.js",
         "js/state/menu.js"
     ]
 }
