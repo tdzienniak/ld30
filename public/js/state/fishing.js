@@ -34,7 +34,7 @@ Entropy.Game.State({
                 window.clearInterval(this.id);
                 messageBox.text('Hurra! You\'ve caught a big, fat fish.');
                 window.removeEventListener('keyup', fish);
-                setTimeout(function () {game.changeState('gameplay')}, 1000);
+                setTimeout(function () {game.changeState('gameplay')}, 2000);
                 return;
             }
 
