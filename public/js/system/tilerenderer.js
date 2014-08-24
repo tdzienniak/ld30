@@ -23,14 +23,16 @@ Entropy.Engine.System({
 
         if (this.isInFoV(components, FoV)) {
             var x = components.position.x - FoV.offset.x;
-            var y = components.position.y -  FoV.offset.y;
+            var y = components.position.y - FoV.offset.y;
 
-            var tile = TILES[components.tile.sequence[0]] || TILES[1];
+            var tile = TILES[components.tile.sequence[0]] || TILES[0];
 
-            WORLD[x][y][0].innerHTML = tile;
+            WORLD[x][y][0].innerText = tile;
             WORLD[x][y][0].style.color = components.color.fg;
             WORLD[x][y][0].style.backgroundColor = components.color.bg;
+
         }
+            
     },
     isInFoV: function (components, FoV) {
         var x = components.position.x;
@@ -49,7 +51,7 @@ Entropy.Engine.System({
         for (var x = 0; x < Entropy.FOV_WIDTH; x++) {
             for (var y = 0; y < Entropy.FOV_HEIGHT; y++) {
 
-                WORLD[x][y][0].innerHTML = TILES[1];
+                WORLD[x][y][0].innerText = TILES[1];
                 WORLD[x][y][0].style.color = '#A9E677';
                 WORLD[x][y][0].style.backgroundColor = "initial";
                 //A9E677

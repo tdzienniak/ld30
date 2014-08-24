@@ -1,9 +1,7 @@
 var TILE_MAPPER = {
     't': 'Tree',
-    '1': 'EmptyGround',
-    ' ': 'EmptyGround',
     '0': 'Box',
-    'o': 'Player',
+    //'o': 'Player',
     'd': 'Wall',
     'v': 'Wall',
     'e': 'Wall',
@@ -23,4 +21,12 @@ var TILE_MAPPER = {
     '/': 'Dancer',
     '|': 'Dancer',
     '\\': 'Dancer',
+    ']': 'Dancer',
+    '[': 'Dancer',
+    ')': 'Dancer',
+    '(': 'Dancer',
+    '{': 'Dancer',
+    '}': 'Dancer',
+    '#': 'Tree'
+
 };

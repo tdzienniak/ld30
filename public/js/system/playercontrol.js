@@ -4,50 +4,47 @@ Entropy.Engine.System({
         var player = this.game.engine.getFamily("Players").one().components;
         var level = this.game.engine.getFamily("Levels").one().components.level.level;
         var pressedKeys = this.game.input.getPressedKeys();
+        var less= this.game.input.getKeysPressedLessThan(1000);
+        //console.log(less)
+        var tiles = this.engine.getEntitiesWith(['Passability']);
 
-        if (pressedKeys["W"]) {
+        if (pressedKeys["W"] || less["W"]) {
             var newY = player.position.y - 1;
 
-            try {
-                if (IMPASSABLE_TILES.indexOf(level.world[newY][player.position.x]) === -1) {
-                    player.position.y = newY;
-                }
-            } catch (e) {
+            if (this.isPassableTile(tiles, player.position.x, newY)) {
                 player.position.y = newY;
             }
-        } else if (pressedKeys["S"]) {
+        } else if (pressedKeys["S"] || less["S"]) {
             var newY = player.position.y + 1;
 
-            try {
-                if (IMPASSABLE_TILES.indexOf(level.world[newY][player.position.x]) === -1) {
-                    player.position.y = newY;
-                }
-            } catch (e) {
+             if (this.isPassableTile(tiles, player.position.x, newY)) {
                 player.position.y = newY;
             }
         }
 
-        if (pressedKeys["A"]) {
+        if (pressedKeys["A"] || less["A"]) {
             var newX = player.position.x - 1;
 
-            try {
-                //console.log(level.world[newX][player.position.y])
-                if (IMPASSABLE_TILES.indexOf(level.world[player.position.y][newX]) === -1) {
-                    player.position.x = newX;
-                }
-            } catch (e) {
+            if (this.isPassableTile(tiles, newX, player.position.y)) {
                 player.position.x = newX;
             }
-        } else if (pressedKeys["D"]) {
+        } else if (pressedKeys["D"] || less["D"]) {
              var newX = player.position.x + 1;
 
-            try {
-                if (IMPASSABLE_TILES.indexOf(level.world[player.position.y][newX]) === -1) {
-                    player.position.x = newX;
-                }
-            } catch (e) {
+            if (this.isPassableTile(tiles, newX, player.position.y)) {
                 player.position.x = newX;
             }
         }
+    },
+    isPassableTile: function (tiles, x, y) {
+        for (var i = 0; i < tiles.length; i++) {
+            var tile = tiles[i].components;
+
+            if (tile.position.x === x && tile.position.y === y && !tile.passability.passable) {
+                return false;
+            }
+        }
+
+        return true;
     }
 });

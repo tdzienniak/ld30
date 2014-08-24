@@ -17,9 +17,9 @@
         <div class="intro-screen screen">
             <div class="intro-message">
                 <p>Dear Higgs,</p>
-                <p>by the time you read these words, I'll propably already be dead. But it doesn't matter.
+                <p>by the time you read these words, I'll propably be dead. But it doesn't matter.
                 Only thing that matters, is that little blue box in your room. You were always told not to touch it. But now the time comes, you are old enough to understand.</p>
-                <p>It may sound weird, but this little box is the connection to the other world. Yes, I mean parallel universe. Every item you put in this box will be available in that other world (I will call it world B). And vice versa.</p>
+                <p>It may sound weird, but this little box is the connection to the other world. Yes, I mean parallel universe. Every item you put in this box will be available in that other world (I'll call it world B) and vice versa.</p>
                 <p>Long time ago I made a deal with a man owning that box in world B, that he will tell his grondson about it in the same time, I will tell mine.</p>
                 <p>Now you know, go and open the box - the key is in the forest.</p>
                 <p>Your loving grandpa,<br /><i>Bob</i></p>
@@ -31,12 +31,15 @@
         </div>
         <div class="menu-screen screen">
            
-            <span id="begin-link" class="link">begin</span>
+            <span id="begin-link" class="link"><b>begin</b></span>
                 <!-- <li id="about-link" class="link">about</li> -->
             
         </div>
         <div class="gameplay-screen screen">
             <div class="world-wrapper">
+                <div class="info-bar-top">
+                    <span id="player-position-x"></span>, <span id="player-position-y"></span><span id="label-text"></span>
+                </div>
                 <table class="world-table">
 
                 </table>
@@ -52,6 +55,8 @@
     <script>
         var WORLD = {};
         var LEVELS = {};
+        
+        var QUEST = {};
         var game = {};
 
         window.addEventListener("load", function (e) {
@@ -64,11 +69,8 @@
             });
 
             loadQueue.on("fileload", function (e) {
-                 console.log(e.item.src)
                 if (e.item.type === createjs.LoadQueue.JSON && e.item.src.substr(0, 8) === "js/level") {
-                    console.log(e.result.id)
                     LEVELS[e.result.id] = e.result;
-
                 }
                 /*if (e.item.type === createjs.LoadQueue.IMAGE) {
                     var baseTexture = new PIXI.BaseTexture(e.result);
@@ -82,7 +84,7 @@
             });
 
             loadQueue.on("complete", function (e) {
-                console.log("OK");
+                console.log("Everything OK!");
                 loadingScreen.animate({opacity: 0}, 500, function () {
                     $(this).removeClass("screen-active");
                     game = new Entropy.Game("initialize");

@@ -1481,11 +1481,6 @@ var root = {};
             time = time || 0;
             _raf_id= raf(this._tick.bind(this));
 
-            if (_paused) {
-                _is_running = false;
-                return;
-            }
-
             time = time || performance.now();
 
             var delta = time - _last_time_value;
@@ -1495,6 +1490,13 @@ var root = {};
             }
 
             _last_time_value = time;
+
+            this.emit('ticker:raf', delta);
+
+            if (_paused) {
+                _is_running = false;
+                return;
+            }
 
             if (FPS !== 60) {
                 _delta_sum += delta;
@@ -1891,6 +1893,10 @@ var root = {};
             this.break_iteration = true;
         },
         one: function () {
+            if (this.head == null) {
+                return null;
+            }
+            
             return this.head.data;
         }
     };
@@ -1918,6 +1924,10 @@ var root = {};
         this.input = new Entropy.Input(this);
         this.engine = new Entropy.Engine(this);
         this.ticker = new Entropy.Ticker(this);
+
+        this.engine.on('engine:updateFinished', function () {
+            this.input.clearKeyTimes();
+        }, this);
 
         this.ticker.on("tick", this.engine.update, this.engine);
 
@@ -2627,6 +2637,8 @@ var root = {};
     };
 
     var _pressed_keys = [];
+    var _pressed_keys_time = [];
+    var _once_pressed_keys = [];
     var _mouse_position = {
         x: 0,
         y: 0
@@ -2641,10 +2653,19 @@ var root = {};
 
         window.addEventListener("keydown", function (e) {
             _pressed_keys[e.keyCode] = true;
+
+            if (!_pressed_keys_time[e.keyCode]) {
+                _pressed_keys_time[e.keyCode] = performance.now();
+            }
         });
 
         window.addEventListener("keyup", function (e) {
             _pressed_keys[e.keyCode] = false;
+
+            if (typeof _pressed_keys_time[e.keyCode] !== 'undefined' && typeof _once_pressed_keys[e.keyCode] === 'undefined') {
+                _pressed_keys_time[e.keyCode] = performance.now() - _pressed_keys_time[e.keyCode];
+                _once_pressed_keys[e.keyCode] = true;
+            }
         });
     }
 
@@ -2661,11 +2682,28 @@ var root = {};
 
             return keys;
         },
+        getKeysPressedLessThan: function (time) {
+            var keys = {};
+
+            for (var name in _keys) {
+                var keyCode = _keys[name];
+
+                if (_pressed_keys_time[keyCode] < time && _once_pressed_keys[keyCode]) {
+                    keys[name] = true;
+                }
+            }
+
+            return keys;
+        },
         setMouseStagePosition: function (position) {
             _mouse_position = position;
         },
         getMouseStagePosition: function () {
             return _mouse_position;
+        },
+        clearKeyTimes: function () {
+            _pressed_keys_time = [];
+            _once_pressed_keys = [];
         }
     };
 

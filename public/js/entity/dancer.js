@@ -5,6 +5,8 @@ Entropy.Engine.Entity({
         console.log(TILES[tile]);
         this.add("Position", x, y)
             .add("Tile", tile, TILE_SEQUENCE[tile] || [tile])
-            .add("Color", '#CC0000');
+            .add("Color", '#CC0000')
+            .add("Label", "Dancer")
+            .add("Passability", false);;
     }
 });

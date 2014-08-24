@@ -8,6 +8,8 @@ body {
     height: 100%;
     padding: 0;
     margin: 0;
+        font-smooth: never;
+    -webkit-font-smoothing : none;
 }
 
 .global-wrapper {
@@ -81,6 +83,7 @@ body {
 }
 
 .link {
+    font-weight: 300;
     cursor: pointer;
 }
 
@@ -93,12 +96,27 @@ body {
     font-size: 17pt;
 }
 
+.info-bar-top {
+    font-family: 'Roboto';
+    font-weight: 300;
+    font-size: 15pt;
+    font-weight: bold;
+    padding: 5px 0;
+    position: relative;
+}
+
+#label-text {
+    position: absolute;
+    right: 0px;
+}
+
 .world-table {
     border-spacing: 0px;
     border-collapse: separate;
 }
 
 .world-table td {
+
     border-spacing: none;
     padding: 0;
 }

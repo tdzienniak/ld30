@@ -4,6 +4,7 @@ Entropy.Engine.Entity({
     create: function (game, x, y, tile) {
         this.add("Position", x, y, tile)
             .add("Tile", tile, [tile])
-            .add("Color", '#000000');
+            .add("Color", '#000000')
+            .add("Passability", false);;
     }
 });
