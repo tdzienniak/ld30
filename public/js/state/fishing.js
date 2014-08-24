@@ -10,7 +10,7 @@ Entropy.Game.State({
         var self = this;
         this.id = -1;
         this.currentFishingProgress = 0;
-        var messageBox = $('#fishing-text').html('Water is calm.<br />(tap \'e\' quickly to catch a fish)');
+        var messageBox = $('#fishing-text').html('Water is calm.<br />(press \'e\' quickly to catch a fish)');
         var progressBar = $('#fishing-progress-current');
 
         this.id = window.setInterval(function () {

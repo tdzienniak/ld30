@@ -68,5 +68,12 @@ Entropy.Game.State({
     onExit: function (game, done) {
         console.log('dsdsa')
         done();
+    },
+    transitions: {
+        'choping': 'toChoping'
+    },
+    toChoping: function (game, next, tree, done) {
+        next.tree = tree;
+        done();
     }
 });

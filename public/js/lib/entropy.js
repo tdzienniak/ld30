@@ -2045,7 +2045,7 @@ var root = {};
                 _queue.push([
                     _current_state[_current_state.transitions[name]],
                     _current_state,
-                    args
+                    args.slice()
                 ]);
 
                 args.shift();

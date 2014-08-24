@@ -22,6 +22,14 @@ Entropy.Engine.System({
             if (this.canDoFishing(player.position.x, player.position.y)) {
                 this.game.pause();
                 this.game.changeState('fishing');
+                return;
+            }
+
+            var tree = this.canChopTree(player.position.x, player.position.y);
+
+            if (tree) {
+                this.game.pause();
+                this.game.changeState('choping', tree);
             }
 
         }
@@ -44,7 +52,7 @@ Entropy.Engine.System({
             var water = node.data.components;
 
             if (state !== 'fishing' && INVENTORY['fishing_rod'] && water.position.x === x && (water.position.y === y - 1 || water.position.y === y + 1)) {
-                return true;
+                return tree;
             }
 
             node = node.next;
@@ -56,6 +64,19 @@ Entropy.Engine.System({
     canChopTree: function (x, y) {
         var trees = this.engine.getFamily('Trees');
 
+        var state = this.game.currentState();
+        var node = trees.head;
 
+        while (node !== null) {
+            var tree = node.data.components;
+
+            if (state !== 'choping' && INVENTORY['axe'] && tree.position.x === x && (tree.position.y === y - 1 || tree.position.y === y + 1)) {
+                return node.data;
+            }
+
+            node = node.next;
+        }
+
+        return false;
     }
 });

@@ -36,6 +36,7 @@
         "js/system/playerposition.js",
         "js/system/sequenceanimation.js",
         "js/system/tilerenderer.js",
+        "js/state/choping.js",
         "js/state/fishing.js",
         "js/state/gameplay.js",
         "js/state/initialize.js",
