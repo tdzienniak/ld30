@@ -45,9 +45,10 @@ Entropy.Game.State({
 
         game.engine.addSystem("PlayerControl", 0);
         game.engine.addSystem("FoVControl", 10);
+        game.engine.addSystem("SequenceAnimation", 11);
         game.engine.addSystem("TileRenderer", 20);
 
-        game.ticker.setFPS(15);
+        game.ticker.setFPS(30);
         game.start();
 
         done();

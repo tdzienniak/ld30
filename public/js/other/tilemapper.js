@@ -15,5 +15,9 @@ var TILE_MAPPER = {
     's': 'Wall',
     'j': 'Path',
     'k': 'Path',
-    'l': 'Path'
+    'l': 'Path',
+    'r': 'River',
+    '/': 'Dancer',
+    '|': 'Dancer',
+    '\\': 'Dancer',
 };

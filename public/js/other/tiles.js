@@ -27,7 +27,7 @@ var TILES = {
     s: '╬', // ╬ -box drawings double vertical and horizontal
 
     //character tiles
-    o: '@', // @ - character entity
+    //o: '@', // @ - character entity
     // o: '0040', // @ - character entity
 
     //paths
@@ -35,6 +35,9 @@ var TILES = {
     k: '▒',
     l: '▓',
 
+    '/': ['/', '|', '\\', '|'],
+    '|': ['|', '\\', '|', '/'],
+    //'\\': ['\\', '|', '/', '|'],
     //trees
     //t: '005E', // ^ - tree
     t: '^', // ^ - tree
