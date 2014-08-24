@@ -5,8 +5,8 @@ Entropy.Game.State({
 
         Entropy.Const('HORIZONTAL_PADDING', 2);
         Entropy.Const('VERTICAL_PADDING', 2);
-        Entropy.Const('FOV_WIDTH', 50);
-        Entropy.Const('FOV_HEIGHT', 20);
+        Entropy.Const('FOV_WIDTH', 60);
+        Entropy.Const('FOV_HEIGHT', 25);
 
         game.changeState('menu');
         done();

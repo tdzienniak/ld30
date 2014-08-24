@@ -30,6 +30,10 @@ var TILES = {
     o: '@', // @ - character entity
     // o: '0040', // @ - character entity
 
+    //paths
+    j: '░',
+    k: '▒',
+    l: '▓',
 
     //trees
     //t: '005E', // ^ - tree

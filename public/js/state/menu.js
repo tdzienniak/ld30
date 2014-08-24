@@ -10,12 +10,13 @@ Entropy.Game.State({
         done();
     },
     onEnter: function (game, done) {
-        $('.menu-screen').fadeIn(500, function () {
+        $('.menu-screen').addClass("screen-active").animate({opacity: 1}, 500, function () {
             done();
         });
     },
      onExit: function (game, done) {
-        $('.menu-screen').fadeOut(500, function () {
+        $('.menu-screen').animate({opacity: 0}, 500, function () {
+            $(this).removeClass("screen-active");
             done();
         });
     }

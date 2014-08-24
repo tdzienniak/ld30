@@ -8,21 +8,28 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-    <div class="loading-screen screen">
-    </div>
-    <div class="menu-screen screen">
-        <ul class="menu-list">
-            <li id="begin-link" class="link">begin</li>
-            <!-- <li id="about-link" class="link">about</li> -->
-        </ul>
-    </div>
-    <div class="gameplay-screen screen">
-        <div class="world-wrapper">
-            <table class="world-table">
+    <div class="global-wrapper">
+        <div class="loading-screen screen screen-active">
+        <div class="progress-total">
+            <div class="progress-current">
+            </div>
+        </div>
+        </div>
+        <div class="menu-screen screen">
+           
+            <span id="begin-link" class="link">begin</span>
+                <!-- <li id="about-link" class="link">about</li> -->
+            
+        </div>
+        <div class="gameplay-screen screen">
+            <div class="world-wrapper">
+                <table class="world-table">
 
-            </table>
+                </table>
+            </div>
         </div>
     </div>
+    
     <footer>
         ld30. theme: connected worlds. mrtambourine &copy; 2014
     </footer>
@@ -34,6 +41,7 @@
         var game = {};
 
         window.addEventListener("load", function (e) {
+            var loadingScreen = $('.loading-screen').css('opacity', 1);
             var loadQueue = new createjs.LoadQueue(true);
 
             loadQueue.loadFile({
@@ -56,12 +64,15 @@
             });
 
             loadQueue.on("progress", function (e) {
-                //loading_progress.style.width =  (e.progress * 300) + "px";
+                loadingScreen.find('.progress-current').css('width', (e.progress * 400) + "px");
             });
 
             loadQueue.on("complete", function (e) {
                 console.log("OK");
-                game = new Entropy.Game("initialize");
+                loadingScreen.animate({opacity: 0}, 500, function () {
+                    $(this).removeClass("screen-active");
+                    game = new Entropy.Game("initialize");
+                });
                 //taste.changeState("welcome");
             });
         });

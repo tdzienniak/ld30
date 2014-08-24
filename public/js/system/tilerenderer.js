@@ -27,7 +27,9 @@ Entropy.Engine.System({
 
             var tile = TILES[components.tile.sequence[0]] || TILES[1];
 
-            WORLD[x][y].innerText = tile;
+            WORLD[x][y][0].innerHTML = tile;
+            WORLD[x][y][0].style.color = components.color.fg;
+            WORLD[x][y][0].style.backgroundColor = components.color.bg;
         }
     },
     isInFoV: function (components, FoV) {
@@ -46,7 +48,11 @@ Entropy.Engine.System({
     clearFoV: function () {
         for (var x = 0; x < Entropy.FOV_WIDTH; x++) {
             for (var y = 0; y < Entropy.FOV_HEIGHT; y++) {
-                WORLD[x][y].innerText = TILES[1];
+
+                WORLD[x][y][0].innerHTML = TILES[1];
+                WORLD[x][y][0].style.color = '#A9E677';
+                WORLD[x][y][0].style.backgroundColor = "initial";
+                //A9E677
             }
         }
     }

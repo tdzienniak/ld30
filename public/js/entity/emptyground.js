@@ -4,6 +4,6 @@ Entropy.Engine.Entity({
     create: function (game, x, y) {
         this.add("Position", x, y)
             .add("Tile", 1, [1])
-            .add("Color", '#000000');
+            .add("Color", '#A9E677', 'initial');
     }
 });

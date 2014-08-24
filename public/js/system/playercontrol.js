@@ -2,9 +2,14 @@ Entropy.Engine.System({
     name: "PlayerControl",
     update: function (delta) {
         var player = this.game.engine.getFamily("Players").one().components;
+        var level = this.game.engine.getFamily("Levels").one().components;
         var pressedKeys = this.game.input.getPressedKeys();
 
         if (pressedKeys["W"]) {
+            var newY = player.position.y - 1;
+
+            //if 
+
             player.position.y -= 1;
         } else if (pressedKeys["S"]) {
             player.position.y += 1;

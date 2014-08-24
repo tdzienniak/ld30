@@ -13,11 +13,11 @@ Entropy.Game.State({
             for (var x = 0; x < Entropy.FOV_WIDTH; x++) {
                 WORLD[x] = WORLD[x] || [];
 
-                var tile = $('<span class="tile"></span>').html('&#x0040;');
+                var tile = $('<span class="tile"></span>');
 
                 tr.append($('<td></td>').append(tile));
 
-                WORLD[x][y] = tile[0];
+                WORLD[x][y] = tile;
 
                 //worldWrapper.append(tile);
             }
@@ -27,7 +27,7 @@ Entropy.Game.State({
         
         console.log('gameplay');
 
-        var level = LEVELS['level-2'];
+        var level = LEVELS['level-1'];
 
         var width = level.world[0].length;
         var height = level.world.length;
@@ -39,6 +39,7 @@ Entropy.Game.State({
             }
         }
 
+        game.engine.create("Level", level);
         game.engine.create("Player", 5, 5);
         game.engine.create("FoV", 0, 0);
 
@@ -52,12 +53,13 @@ Entropy.Game.State({
         done();
     },
     onEnter: function (game, done) {
-        $('.gameplay-screen').fadeIn(500, function () {
+        $('.gameplay-screen').addClass("screen-active").animate({opacity: 1}, 500, function () {
             done();
         });
     },
      onExit: function (game, done) {
-        $('.gameplay-screen').fadeOut(500, function () {
+        $('.gameplay-screen').animate({opacity: 0}, 500, function () {
+            $(this).removeClass("screen-active");
             done();
         });
     }
