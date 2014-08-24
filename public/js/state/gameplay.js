@@ -63,14 +63,10 @@ Entropy.Game.State({
         done();
     },
     onEnter: function (game, done) {
-        $('.gameplay-screen').addClass("screen-active").animate({opacity: 1}, 500, function () {
-            done();
-        });
+        done();
     },
-     onExit: function (game, done) {
-        $('.gameplay-screen').animate({opacity: 0}, 500, function () {
-            $(this).removeClass("screen-active");
-            done();
-        });
+    onExit: function (game, done) {
+        console.log('dsdsa')
+        done();
     }
 });

@@ -16,9 +16,13 @@ Entropy.Engine.System({
                 console.log('biorę klucz');
                 INVENTORY['blue_box_key'] = true;
                 this.engine.markForRemoval(key);
-
+                return;
             }
 
+            if (this.canDoFishing(player.position.x, player.position.y)) {
+                this.game.pause();
+                this.game.changeState('fishing');
+            }
 
         }
     },
@@ -31,7 +35,22 @@ Entropy.Engine.System({
             return false;
         }
     },
-    canCatchFish: function () {
+    canDoFishing: function (x, y) {
+        var rivers = this.engine.getFamily('Rivers');
+        var state = this.game.currentState();
+        var node = rivers.head;
+
+        while (node !== null) {
+            var water = node.data.components;
+
+            if (state !== 'fishing' && INVENTORY['fishing_rod'] && water.position.x === x && (water.position.y === y - 1 || water.position.y === y + 1)) {
+                return true;
+            }
+
+            node = node.next;
+        }
+
+        return false;
 
     },
     canChopTree: function (x, y) {

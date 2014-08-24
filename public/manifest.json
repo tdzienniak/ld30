@@ -36,9 +36,12 @@
         "js/system/playerposition.js",
         "js/system/sequenceanimation.js",
         "js/system/tilerenderer.js",
+        "js/state/fishing.js",
         "js/state/gameplay.js",
         "js/state/initialize.js",
         "js/state/intro.js",
-        "js/state/menu.js"
+        "js/state/menu.js",
+        "js/state/postgameplay.js",
+        "js/state/pregameplay.js"
     ]
 }

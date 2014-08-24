@@ -2060,6 +2060,9 @@ var root = {};
 
             shift();
         },
+        currentState: function () {
+            return _current_state.name;
+        },
         setRenderer: function (renderer) {
             this.renderer = renderer;
         },

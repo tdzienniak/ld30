@@ -1,7 +1,7 @@
 var INVENTORY = {
     'blue_box_key': false,
     'axe': false,
-    'fishing_rod': false,
+    'fishing_rod': true,
     'fish': 0,
     'wood': 0,
 };

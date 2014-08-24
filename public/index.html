@@ -40,9 +40,14 @@
                 <div class="info-bar-top">
                     <span id="player-position-x"></span>, <span id="player-position-y"></span><span id="label-text"></span>
                 </div>
-                <table class="world-table">
+                <table class="world-table"></table>
 
-                </table>
+            </div>
+        </div>
+        <div class="fishing-screen screen">
+            <div class="fishing-wrapper">
+                <div id="fishing-text">The water is calm.</div>
+                <div id="fishing-progress-total"><div id="fishing-progress-current"></div></div>
             </div>
         </div>
     </div>
@@ -55,7 +60,7 @@
     <script>
         var WORLD = {};
         var LEVELS = {};
-        
+        var FISHING_IN_PROGRESS = false;
         var QUEST = {};
         var game = {};
 

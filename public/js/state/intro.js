@@ -4,7 +4,7 @@ Entropy.Game.State({
         console.log('intro');
 
         $('#skip-intro').click(function () {
-            game.changeState('gameplay');
+            game.changeState('pregameplay');
         });
 
         done();
