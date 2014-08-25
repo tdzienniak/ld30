@@ -82,7 +82,7 @@ var DIALOGUE = {
         },
         {
             person: 'Me',
-            text: 'Holy f**k! You\'ve made it!'
+            text: 'Holy flock! You\'ve made it!'
         },
         {
             person: 'Guy',
