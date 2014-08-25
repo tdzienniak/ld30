@@ -14,7 +14,7 @@ var DIALOGUE = {
         },
         {
             person: 'Guy',
-            text: 'The blue box you say... Well, I will need some fresh fish. Here you go - a fishing rod. Go and catch 10 fish.'
+            text: 'The blue box you say... Well, I will need some fresh fish. Here you go - a fishing rod. Go and catch 5 fish.'
         },
         {
             person: 'Me',

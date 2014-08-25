@@ -148,7 +148,7 @@ Entropy.Engine.System({
     canTalkToBarman2: function (x, y) {
         var barman = this.engine.getFamily('Barmans').one().components;
 
-        if (Math.ceil(FUNC.distance(x, y, barman.position.x, barman.position.y)) === 1 && QUEST['barman_1'] && !QUEST['barman_2'] && INVENTORY['fish'] >= 10) {
+        if (Math.ceil(FUNC.distance(x, y, barman.position.x, barman.position.y)) === 1 && QUEST['barman_1'] && !QUEST['barman_2'] && INVENTORY['fish'] >= 5) {
             return true;
         }
 
