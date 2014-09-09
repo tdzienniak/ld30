@@ -8,7 +8,7 @@ Entropy.Engine.System({
         var pressedKeys = this.game.input.getPressedKeys();
         var less= this.game.input.getKeysPressedLessThan(1000);
 
-        if (pressedKeys["E"] || less["E"]) {
+        if (pressedKeys.E || less.E) {
 
             if (this.canTalkToHooker1(player.position.x, player.position.y)) {
                 this.game.pause();
