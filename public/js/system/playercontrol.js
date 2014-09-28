@@ -37,13 +37,25 @@ Entropy.Engine.System({
         }
     },
     isPassableTile: function (tiles, x, y) {
-        for (var i = 0; i < tiles.length; i++) {
-            var tile = tiles[i].components;
+        var node, tile;
+
+        tiles.reset()
+
+        while (node = tiles.next()) {
+            tile = node.data.components;
 
             if (tile.position.x === x && tile.position.y === y && !tile.passability.passable) {
                 return false;
             }
         }
+
+        // for (var i = 0; i < tiles.length; i++) {
+        //     var tile = tiles[i].components;
+
+        //     if (tile.position.x === x && tile.position.y === y && !tile.passability.passable) {
+        //         return false;
+        //     }
+        // }
 
         return true;
     }

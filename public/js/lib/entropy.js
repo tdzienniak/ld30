@@ -1,10 +1,12 @@
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Entropy=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
- * @license BitSet.js v1.0.0 05/03/2014
+ * @license BitSet.js v1.0.2 16/06/2014
  * http://www.xarg.org/2014/03/javascript-bit-array/
  *
  * Copyright (c) 2014, Robert Eisele (robert@xarg.org)
  * Dual licensed under the MIT or GPL Version 2 licenses.
  **/
+
 
 /**
  * BitSet Class
@@ -13,9 +15,6 @@
  * @param {number=} value The default value for the bits
  * @constructor
  **/
-
-(function () {
-
 function BitSet(alloc, value) {
 
     if (alloc === undefined) {
@@ -23,7 +22,7 @@ function BitSet(alloc, value) {
     } else if (typeof alloc === 'string') {
         alloc = alloc['length'];
     }
-    
+
     if (value !== 1) {
         value = 0;
     } else {
@@ -275,7 +274,9 @@ function BitSet(alloc, value) {
      * @returns {boolean} true if 
      */
     this['subsetOf'] = function(obj) {
+
         if (obj instanceof BitSet) {
+
             if (obj['length'] !== length) {
                 return false;
             }
@@ -285,12 +286,12 @@ function BitSet(alloc, value) {
                     return false;
                 }
             }
+
         } else {
             return false;
         }
-
         return true;
-    }
+    };
 
     /**
      * Clones the actual object
@@ -562,2164 +563,2084 @@ function BitSet(alloc, value) {
     };
 }
 
- this.BitSet = BitSet;
+if (typeof module !== 'undefined' && module['exports']) {
+    module['exports']['BitSet'] = BitSet;
+}
+
+},{}],2:[function(require,module,exports){
+var DoublyLinkedList, Node,
+  __slice = [].slice;
+
+Node = (function() {
+  function Node(data) {
+    this.prev = null;
+    this.next = null;
+    this.data = data != null ? data : null;
+  }
+
+  return Node;
+
 })();
+
+DoublyLinkedList = (function() {
+  function DoublyLinkedList() {
+    this.head = this.tail = null;
+    this._current = this.head;
+    this._pool = null;
+  }
+
+  DoublyLinkedList.prototype._getNewNode = function(data) {
+    var node;
+    if (this._pool != null) {
+      node = this._pool;
+      this._pool = node.next;
+      node.next = node.prev = null;
+      node.data = data;
+      if (this._pool != null) {
+        this._pool.prev = null;
+      }
+      return node;
+    } else {
+      return new Node(data);
+    }
+  };
+
+  DoublyLinkedList.prototype.append = function(data) {
+    var node;
+    if (data == null) {
+      return;
+    }
+    node = this._getNewNode(data);
+    if (this.head == null) {
+      this.tail = this.head = node;
+      return this;
+    }
+    this.tail.next = node;
+    node.prev = this.tail;
+    this.tail = node;
+    return this;
+  };
+
+  DoublyLinkedList.prototype.prepend = function(data) {
+    var node;
+    if (data == null) {
+      return;
+    }
+    node = this._getNewNode(data);
+    if (this.head == null) {
+      this.tail = this.head = node;
+      return this;
+    }
+    this.head.prev = node;
+    node.next = this.head;
+    this.head = node;
+    return this;
+  };
+
+  DoublyLinkedList.prototype.join = function(list, prepend) {
+    if (prepend == null) {
+      prepend = false;
+    }
+    if (!list instanceof DoublyLinkedList) {
+      console.warn('DoublyLinkedList.join argument must be type of DoublyLinkedList');
+      return this;
+    }
+    if (list.head == null) {
+      return this;
+    }
+    if (this.head == null) {
+      this.head = list.head;
+      this.tail = list.tail;
+      return this;
+    }
+    if (prepend) {
+      list.tail.next = this.head;
+      this.head.prev = list.tail;
+      this.head = list.head;
+      list.tail = this.tail;
+    } else {
+      list.head.prev = this.tail;
+      this.tail.next = list.head;
+      this.tail = list.tail;
+      list.head = this.head;
+    }
+    return this;
+  };
+
+  DoublyLinkedList.prototype.remove = function(thing, byData) {
+    var node, nodeToRemove, _ref, _ref1, _ref2, _ref3;
+    if (byData == null) {
+      byData = false;
+    }
+    if (byData) {
+      this.reset();
+      while (node = this.next()) {
+        if (thing === node.data) {
+          nodeToRemove = node;
+          break;
+        }
+      }
+    } else {
+      nodeToRemove = thing;
+    }
+    if (nodeToRemove != null) {
+      if ((nodeToRemove.next == null) && (nodeToRemove.prev == null)) {
+        this.head = this.tail = null;
+      } else if (nodeToRemove === this.head) {
+        if ((_ref = nodeToRemove.next) != null) {
+          _ref.prev = null;
+        }
+        this.head = nodeToRemove.next;
+      } else if (nodeToRemove === this.tail) {
+        if ((_ref1 = nodeToRemove.prev) != null) {
+          _ref1.next = null;
+        }
+        this.tail = nodeToRemove.prev;
+      } else {
+        if ((_ref2 = nodeToRemove.next) != null) {
+          _ref2.prev = nodeToRemove.prev;
+        }
+        if ((_ref3 = nodeToRemove.prev) != null) {
+          _ref3.next = nodeToRemove.next;
+        }
+      }
+    }
+    return this;
+  };
+
+  DoublyLinkedList.prototype.pop = function() {};
+
+  DoublyLinkedList.prototype.shift = function() {};
+
+  DoublyLinkedList.prototype.push = function(data) {
+    return this.append(data);
+  };
+
+  DoublyLinkedList.prototype.unshift = function(data) {
+    return this.prepend(data);
+  };
+
+  DoublyLinkedList.prototype.one = function() {
+    var _ref;
+    return (_ref = this.head) != null ? _ref.data : void 0;
+  };
+
+  DoublyLinkedList.prototype.begin = function() {
+    this._current = this.head;
+    return this;
+  };
+
+  DoublyLinkedList.prototype.end = function() {
+    this._current = this.tail;
+    return this;
+  };
+
+  DoublyLinkedList.prototype.next = function() {
+    var temp, _ref;
+    temp = this._current;
+    this._current = (_ref = this._current) != null ? _ref.next : void 0;
+    return temp;
+  };
+
+  DoublyLinkedList.prototype.prev = function() {
+    var temp, _ref;
+    temp = this._current;
+    this._current = (_ref = this._current) != null ? _ref.prev : void 0;
+    return temp;
+  };
+
+  DoublyLinkedList.prototype.current = function() {
+    return this._current;
+  };
+
+  DoublyLinkedList.prototype.iterate = function() {
+    var args, binding, fn, node, _ref;
+    fn = arguments[0], binding = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
+    this.reset();
+    while (node = this.next()) {
+      fn.apply(binding, [node, node.data, (_ref = node.data) != null ? _ref.components : void 0].concat(args));
+    }
+    return this;
+  };
+
+  DoublyLinkedList.prototype.reset = function(end) {
+    if (end == null) {
+      end = false;
+    }
+    this._current = !end ? this.head : this.tail;
+    return this;
+  };
+
+  DoublyLinkedList.prototype.clear = function() {
+    if (this.tail != null) {
+      this.tail.next = this._pool;
+      this._pool = this.head;
+    }
+    this.head = this.tail = null;
+    this._current = null;
+    return this;
+  };
+
+  return DoublyLinkedList;
+
+})();
+
+module.exports = DoublyLinkedList;
+
+
+
+},{}],3:[function(require,module,exports){
+var Node, OrderedLinkedList,
+  __slice = [].slice;
+
+Node = (function() {
+  function Node(data, priority) {
+    this.next = null;
+    this.priority = priority;
+    this.data = data != null ? data : null;
+  }
+
+  return Node;
+
+})();
+
+OrderedLinkedList = (function() {
+  function OrderedLinkedList() {
+    this.head = this.tail = null;
+    this._current = this.head;
+  }
+
+  OrderedLinkedList.prototype.insert = function(data, priority) {
+    var i, node;
+    node = new Node(data, priority);
+    if (this.head == null) {
+      if (node.priority == null) {
+        node.priority = 0;
+      }
+      this.head = this.tail = node;
+      return this;
+    }
+    if (node.priority == null) {
+      node.priority = this.tail.priority;
+    }
+    if (this.head.next == null) {
+      if (this.head.priority <= node.priority) {
+        this.head.next = this.tail = node;
+      } else {
+        node.next = this.tail = this.head;
+        this.head = node;
+      }
+      return this;
+    }
+    if (node.priority >= this.tail.priority) {
+      this.tail = this.tail.next = node;
+      return this;
+    }
+    if (node.priority < this.head.priority) {
+      node.next = this.head;
+      this.head = node;
+      return this;
+    }
+    i = this.head;
+    while (i.next != null) {
+      if (i.next.priority > node.priority) {
+        node.next = i.next;
+        i.next = node;
+        break;
+      }
+      i = i.next;
+    }
+    return this;
+  };
+
+  OrderedLinkedList.prototype.remove = function(thing, byData) {
+    var node;
+    if (byData == null) {
+      byData = false;
+    }
+    if (this.head == null) {
+      return this;
+    }
+    if (!byData && thing === this.head || byData && thing === this.head.data) {
+      if (this.head === this.tail) {
+        this.clear();
+      } else {
+        this.head = this.head.next;
+      }
+      return this;
+    }
+    this.reset();
+    while (node = this.next()) {
+      if (!byData && this === node.next || byData && thing === node.next.data) {
+        if (node.next === this.tail) {
+          node.next = null;
+          this.tail = node;
+        } else {
+          node.next = node.next.next;
+        }
+        return this;
+      }
+    }
+    return this;
+  };
+
+  OrderedLinkedList.prototype.begin = function() {
+    this._current = this.head;
+    return this;
+  };
+
+  OrderedLinkedList.prototype.end = function() {
+    this._current = this.tail;
+    return this;
+  };
+
+  OrderedLinkedList.prototype.next = function() {
+    var temp, _ref;
+    temp = this._current;
+    this._current = (_ref = this._current) != null ? _ref.next : void 0;
+    return temp;
+  };
+
+  OrderedLinkedList.prototype.current = function() {
+    return this._current;
+  };
+
+  OrderedLinkedList.prototype.iterate = function() {
+    var args, binding, fn, node;
+    fn = arguments[0], binding = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
+    this.reset();
+    while (node = this.next()) {
+      fn.apply(binding, [node, node.data].concat(args));
+    }
+    return this;
+  };
+
+  OrderedLinkedList.prototype.reset = function(end) {
+    if (end == null) {
+      end = false;
+    }
+    this._current = !end ? this.head : this.tail;
+    return this;
+  };
+
+  OrderedLinkedList.prototype.clear = function() {
+    this.head = this.tail = null;
+    this._current = null;
+    return this;
+  };
+
+  return OrderedLinkedList;
+
+})();
+
+module.exports = OrderedLinkedList;
+
+
+
+},{}],4:[function(require,module,exports){
+var Pool;
+
+Pool = (function() {
+  function Pool() {
+    this.size = 0;
+    this.pool = {};
+  }
+
+  Pool.prototype.push = function(key, value) {
+    if (!(key in this.pool)) {
+      this.pool[key] = [];
+    }
+    this.size++;
+    return this.pool[key].push(value);
+  };
+
+  Pool.prototype.pop = function(key) {
+    if (this.has(key)) {
+      this.size--;
+      return this.pool[key].pop();
+    } else {
+      return void 0;
+    }
+  };
+
+  Pool.prototype.has = function(key) {
+    return key in this.pool && this.pool[key].length > 0;
+  };
+
+  Pool.prototype.size = function() {
+    return this.size;
+  };
+
+  return Pool;
+
+})();
+
+module.exports = Pool;
+
+
+
+},{}],5:[function(require,module,exports){
+var DEFAULT_CONFIG, USER_CONFIG, type;
+
+type = require('../utils/type');
+
+DEFAULT_CONFIG = {
+  debug: 3,
+  max_components_count: 100,
+  max_frame_time: 20,
+  default_time_factor: 1,
+  default_fps: 60
+};
+
+USER_CONFIG = {};
+
+module.exports = function(key, value) {
+  if (!type.of.string(key)) {
+    return null;
+  }
+  if (value == null) {
+    if (key in USER_CONFIG) {
+      return USER_CONFIG[key];
+    }
+    if (key in DEFAULT_CONFIG) {
+      return DEFAULT_CONFIG[key];
+    }
+    return null;
+  } else {
+    return USER_CONFIG[key] = value;
+  }
+};
+
+
+
+},{"../utils/type":20}],6:[function(require,module,exports){
+var BitSet, DoublyLinkedList, Engine, Entity, EventEmitter, OrderedLinkedList, Pool, config, debug, extend, register, type,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  __slice = [].slice;
+
+type = require('../utils/type');
+
+debug = require('../debug/debug');
+
+config = require('../config/config');
+
+extend = require('../utils/extend');
+
+register = require('./register');
+
+EventEmitter = require('./event');
+
+Pool = require('../collection/pool');
+
+OrderedLinkedList = require('../collection/orderedlinkedlist');
+
+DoublyLinkedList = require('../collection/doublylinkedlist');
+
+Entity = require('./entity');
+
+BitSet = require('bitset.js').BitSet;
+
+Engine = (function(_super) {
+  __extends(Engine, _super);
+
+  Engine.Component = register.registerComponent;
+
+  Engine.System = register.registerSystem;
+
+  Engine.Entity = register.registerEntity;
+
+  function Engine(game) {
+    var i, _i;
+    this.game = game;
+    Engine.__super__.constructor.call(this);
+    this._greatestEntityId = 0;
+    this._entityIdsToReuse = [];
+    this._entities = [];
+    this._systems = new OrderedLinkedList();
+    this._singletonSystemsPresentInEngine = {};
+    this._searchingBitSet = new BitSet(config('max_components_count'));
+    this._excludingBitSet = new BitSet(config('max_components_count'));
+    this._componetsPool = new Pool();
+    this._entitiesPool = new Pool();
+    this._families = {
+      NONE: new DoublyLinkedList()
+    };
+    this._functionalFamiliesPool = [];
+    this._usedFunctionalFamilies = [];
+    for (i = _i = 0; _i <= 20; i = ++_i) {
+      this._functionalFamiliesPool.push(new DoublyLinkedList());
+    }
+    this._entitiesToRemove = [];
+    this._BLANK_FAMILY = new DoublyLinkedList();
+    this._updating = false;
+    this.on('engine:updateFinished', this._removeMarkedEntities, this);
+    this.on('engine:updateFinished', this._transferFunctionalFamilies, this);
+    this._entitiesCount = 0;
+    register.setCannotModify();
+  }
+
+  Engine.prototype.canModify = function() {
+    return register.canModify();
+  };
+
+  Engine.prototype.isUpdating = function() {
+    return this._updating;
+  };
+
+  Engine.prototype.generateEntityId = function() {
+    var id;
+    id = this._entityIdsToReuse.pop();
+    if (id == null) {
+      id = this._greatestEntityId++;
+    }
+    return id;
+  };
+
+  Engine.prototype.getNewComponent = function(name) {
+    var componentPattern;
+    if (this._componetsPool.has(name)) {
+      return this._componetsPool.pop(name);
+    } else {
+      componentPattern = register.getComponentPattern(name);
+      if (componentPattern != null) {
+        return {
+          name: componentPattern.name,
+          _pattern: componentPattern
+        };
+      } else {
+        debug.warning('component "%" does not exist', name);
+        return {};
+      }
+    }
+  };
+
+  Engine.prototype.addComponentToPool = function(name, component) {
+    return this._componetsPool.push(name, component);
+  };
+
+  Engine.prototype.create = function() {
+    var args, entity, name;
+    name = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    args.unshift(this.game);
+    entity = this._getNewEntity(name);
+    entity.getPattern().create.apply(entity, args);
+    this._addEntityToFamilies(entity);
+    this._addEntityToEngine(entity);
+    return this;
+  };
+
+  Engine.prototype._getNewEntity = function(name) {
+    var entity;
+    if (this._entitiesPool.has(name)) {
+      entity = this._entitiesPool.pop(name);
+      entity.renovate();
+    } else {
+      entity = new Entity(name, this);
+    }
+    return entity;
+  };
+
+  Engine.prototype._addEntityToFamilies = function(entity) {
+    var families, family, _base, _i, _len;
+    families = entity.getPattern()._families;
+    for (_i = 0, _len = families.length; _i < _len; _i++) {
+      family = families[_i];
+      if ((_base = this._families)[family] == null) {
+        _base[family] = new DoublyLinkedList();
+      }
+      this._families[family].append(entity);
+    }
+    return this;
+  };
+
+  Engine.prototype._addEntityToEngine = function(entity) {
+    this._entities[entity.getId()] = entity;
+    this._entitiesCount++;
+    return this;
+  };
+
+  Engine.prototype.remove = function() {
+    var args, entity, id, pattern;
+    entity = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    id = entity.getId();
+    if (this._entities[id] == null) {
+      return this;
+    }
+    args.unshift(this.game);
+    pattern = entity.getPattern();
+    pattern.remove && pattern.remove.apply(entity, args);
+    this._removeEntityFromFamilies(entity);
+    entity.removeAllComponents();
+    this._entitiesPool.push(entity.name, entity);
+    delete this._entities[id];
+    this._entityIdsToReuse.push(id);
+    this._entitiesCount--;
+    return this;
+  };
+
+  Engine.prototype.removeAllEntities = function() {
+    var entity, _i, _len, _ref;
+    if (!this._updating) {
+      _ref = this._entities;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        entity = _ref[_i];
+        this.remove(entity);
+      }
+    } else {
+      debug.warning('cannot remove entities during engine update');
+    }
+    return this;
+  };
+
+  Engine.prototype.markForRemoval = function(entity) {
+    this._entitiesToRemove.push(entity);
+    return this;
+  };
+
+  Engine.prototype._removeMarkedEntities = function() {
+    var entity, _i, _len, _ref;
+    _ref = this._entitiesToRemove;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      entity = _ref[_i];
+      this.remove(entity);
+    }
+    this._entitiesToRemove.length = 0;
+    return this;
+  };
+
+  Engine.prototype._removeEntityFromFamilies = function(entity) {
+    var families, family, _i, _len, _ref;
+    families = entity.getPattern()._families;
+    for (_i = 0, _len = families.length; _i < _len; _i++) {
+      family = families[_i];
+      if ((_ref = this._families[family]) != null) {
+        _ref.remove(entity);
+      }
+    }
+    return this;
+  };
+
+  Engine.prototype.getEntity = function(id) {
+    var _ref;
+    return (_ref = this._entities[id]) != null ? _ref : null;
+  };
+
+  Engine.prototype.getFamily = function(family) {
+    var _ref;
+    return ((_ref = this._families[family]) != null ? _ref : this._BLANK_FAMILY).reset();
+  };
+
+  Engine.prototype.getEntitiesByFamily = function(family) {
+    return this.getFamily(family);
+  };
+
+  Engine.prototype.getEntitiesWith = function(components, legacy) {
+    var component, entity, matchedEntities, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+    if (legacy == null) {
+      legacy = false;
+    }
+    if (legacy) {
+      matchedEntities = [];
+    } else {
+      matchedEntities = this._getNewFunctionalFamily();
+    }
+    this._searchingBitSet.clear();
+    this._excludingBitSet.clear();
+    if (type.of.object(components)) {
+      if (type.of.array(components.without)) {
+        _ref = components.without;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          component = _ref[_i];
+          this._excludingBitSet.set(register.getComponentPattern(component)._bit);
+        }
+      }
+      components = (_ref1 = components["with"]) != null ? _ref1 : [];
+    }
+    for (_j = 0, _len1 = components.length; _j < _len1; _j++) {
+      component = components[_j];
+      this._searchingBitSet.set(register.getComponentPattern(component)._bit);
+    }
+    _ref2 = this._entities;
+    for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+      entity = _ref2[_k];
+      if (!type.of.undefined(entity) && this._searchingBitSet.subsetOf(entity._bitset) && this._excludingBitSet.and(entity._bitset).isEmpty()) {
+        matchedEntities.push(entity);
+      }
+    }
+    return matchedEntities;
+  };
+
+  Engine.prototype.getEntitiesByName = function(name) {};
+
+  Engine.prototype._getNewFunctionalFamily = function() {
+    var newFamily;
+    newFamily = this._functionalFamiliesPool.pop();
+    if (newFamily == null) {
+      newFamily = new DoublyLinkedList();
+      this._usedFunctionalFamilies.push(newFamily);
+    }
+    return newFamily;
+  };
+
+  Engine.prototype._transferFunctionalFamilies = function() {
+    var used;
+    while (used = this._usedFunctionalFamilies.pop()) {
+      this._functionalFamiliesPool.push(used.clear());
+    }
+    return this;
+  };
+
+  Engine.prototype.addSystem = function() {
+    var args, name, pattern, priority, system;
+    name = arguments[0], priority = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
+    if (name in this._singletonSystemsPresentInEngine) {
+      debug.warning('system % is defined as singleton and is already present in engine');
+      return this;
+    }
+    pattern = register.getSystemPattern(name);
+    system = {
+      game: this.game,
+      engine: this,
+      priority: priority
+    };
+    extend(system, pattern);
+    system.initialize && system.initialize.apply(system, args);
+    this._systems.insert(system, priority);
+    if (system.singleton) {
+      this._singletonSystemsPresentInEngine[name] = true;
+    }
+    return this;
+  };
+
+  Engine.prototype.addSystems = function() {
+    var arg, args, _i, _len;
+    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    for (_i = 0, _len = args.length; _i < _len; _i++) {
+      arg = args[_i];
+      this.addSystem.apply(this, arg);
+    }
+    return this;
+  };
+
+  Engine.prototype.removeSystem = function() {
+    var args, system;
+    system = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    if (!this._updating) {
+      system.remove && system.remove.apply(system, args);
+      this._systems.remove(system, true);
+    }
+    return this;
+  };
+
+  Engine.prototype.removeAllSystems = function() {
+    var args, node, system;
+    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    this._systems.reset();
+    while (node = this._systems.next()) {
+      system = node.data;
+      system.remove && system.remove.apply(system, args);
+    }
+    this._systems.clear();
+    return this;
+  };
+
+  Engine.prototype.isSystemActive = function(name) {};
+
+  Engine.prototype.update = function(event) {
+    var delta, node, system;
+    delta = event.delta;
+    this.emit('engine:beforeUpdate', event);
+    this._updating = true;
+    this._systems.reset();
+    while (node = this._systems.next()) {
+      system = node.data;
+      system.update(delta, event);
+    }
+    this._updating = false;
+    this.emit('engine:afterUpdate', event);
+    return this.emit('engine:updateFinished');
+  };
+
+  Engine.prototype.clear = function(immediately) {
+    if (immediately) {
+      this.removeAllSystems();
+      this.removeAllEntities();
+    } else {
+      this.once('engine:updateFinished', (function(_this) {
+        return function(e) {
+          _this.removeAllSystems();
+          return _this.removeAllEntities();
+        };
+      })(this));
+    }
+    return this;
+  };
+
+  return Engine;
+
+})(EventEmitter);
+
+module.exports = Engine;
+
+
+
+},{"../collection/doublylinkedlist":2,"../collection/orderedlinkedlist":3,"../collection/pool":4,"../config/config":5,"../debug/debug":14,"../utils/extend":18,"../utils/type":20,"./entity":7,"./event":8,"./register":11,"bitset.js":1}],7:[function(require,module,exports){
+var BitSet, Entity, EventEmitter, config, debug, register, type,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  __slice = [].slice;
+
+config = require('../config/config');
+
+type = require('../utils/type');
+
+debug = require('../debug/debug');
+
+EventEmitter = require('./event');
+
+config = require('../config/config');
+
+register = require('./register');
+
+BitSet = require('bitset.js').BitSet;
+
+Entity = (function(_super) {
+  __extends(Entity, _super);
+
+  function Entity(name, engine) {
+    this.engine = engine;
+    Entity.__super__.constructor.call(this);
+    this._id = this.engine.generateEntityId();
+    this._bitset = new BitSet(config('max_components_count'));
+    this._pattern = register.getEntityPattern(name);
+    this._setDefaults();
+    this.name = name;
+    this.components = {};
+    this.engine.on('engine:updateFinished', this._applyStateChanges, this);
+  }
+
+  Entity.prototype.getId = function() {
+    return this._id;
+  };
+
+  Entity.prototype.getPattern = function() {
+    return this._pattern;
+  };
+
+  Entity.prototype.add = function() {
+    var args, component, lowercaseName, name, _ref;
+    name = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    if (!type.of.string(name)) {
+      debug.warning('component name should be string');
+      return this;
+    }
+    lowercaseName = name.toLowerCase();
+    component = (_ref = this.components[lowercaseName]) != null ? _ref : this.engine.getNewComponent(lowercaseName);
+    component._pattern.initialize.apply(component, args);
+    this.components[lowercaseName] = component;
+    this._bitset.set(component._pattern._bit);
+    return this;
+  };
+
+  Entity.prototype.remove = function(name, hardDelete) {
+    var bit, component, lowercaseName;
+    if (hardDelete == null) {
+      hardDelete = false;
+    }
+    if (!type.of.string(name)) {
+      debug.warning('component name should be string');
+      return this;
+    }
+    lowercaseName = name.toLowerCase();
+    component = this.components[lowercaseName];
+    if (component != null) {
+      bit = component._pattern._bit;
+      if (this._bitset.get(bit) === 0 && !hardDelete) {
+        return this;
+      }
+      if (hardDelete) {
+        this.engine.addComponentToPool(lowercaseName, component);
+        delete this.components[lowercaseName];
+      }
+      this._bitset.clear(bit);
+    }
+    return this;
+  };
+
+  Entity.prototype.removeAllComponents = function(hardDelete) {
+    var componentName;
+    if (hardDelete == null) {
+      hardDelete = false;
+    }
+    if (!hardDelete) {
+      this._bitset.clear();
+      return this;
+    } else {
+      for (componentName in this.components) {
+        this.remove(componentName, true);
+      }
+      return this;
+    }
+  };
+
+  Entity.prototype.has = function(name) {
+    var _ref;
+    if (type.of.string(name)) {
+      return this.bitset.get((_ref = this.components[name.toLowerCase()]) != null ? _ref._pattern._bit : void 0) === 1;
+    } else {
+      return false;
+    }
+  };
+
+  Entity.prototype.renovate = function() {
+    this._id = this.engine.generateEntityId();
+    this._setDefaults();
+    return this;
+  };
+
+  Entity.prototype._setDefaults = function() {
+    this._inFinalState = false;
+    this._remainingStateChanges = [];
+    this._stateObject = {};
+    return this._currentStates = [];
+  };
+
+  Entity.prototype.enter = function(stateName) {};
+
+  Entity.prototype.exit = function(stateName) {};
+
+  Entity.prototype["in"] = function() {
+    var states;
+    states = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+  };
+
+  Entity.prototype._getStatePattern = function(stateName) {};
+
+  Entity.prototype._exitAllStates = function() {};
+
+  Entity.prototype._applyStateChanges = function() {};
+
+  return Entity;
+
+})(EventEmitter);
+
+module.exports = Entity;
+
+
+
+},{"../config/config":5,"../debug/debug":14,"../utils/type":20,"./event":8,"./register":11,"bitset.js":1}],8:[function(require,module,exports){
+var EventEmitter, type,
+  __slice = [].slice;
+
+type = require('../utils/type');
+
+EventEmitter = (function() {
+  function EventEmitter() {
+    this.events = {};
+  }
+
+  EventEmitter.prototype.on = function(event, fn, binding, once) {
+    var _base;
+    if (!type.of.string(event || !type.of["function"](fn))) {
+      return void 0;
+    }
+    if ((_base = this.events)[event] == null) {
+      _base[event] = [];
+    }
+    this.events[event].push({
+      fn: fn,
+      binding: binding != null ? binding : null,
+      once: once != null ? once : false
+    });
+    return void 0;
+  };
+
+  EventEmitter.prototype.once = function(event, fn, binding) {
+    return this.on(event, fn, binding);
+  };
+
+  EventEmitter.prototype.emit = function() {
+    var args, event;
+    event = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    if (!(event in this.events)) {
+      return void 0;
+    }
+    this.events[event] = this.events[event].filter(function(listener) {
+      return (!listener.fn.apply(listener.binding, args)) || (!listener.once);
+    });
+    return void 0;
+  };
+
+  EventEmitter.prototype.trigger = function() {
+    var args;
+    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    return this.emit.apply(this, args);
+  };
+
+  EventEmitter.prototype.off = function(event, fn) {
+    if (!type.of.string(event || !event in this.events)) {
+      return void 0;
+    }
+    this.events[event] = this.events[event].filter(function(listener) {
+      return (fn != null) && listener.fn !== fn;
+    });
+    return void 0;
+  };
+
+  return EventEmitter;
+
+})();
+
+module.exports = EventEmitter;
+
+
+
+},{"../utils/type":20}],9:[function(require,module,exports){
+var ARGS, BINDING, Engine, EventEmitter, FN, Game, Input, State, Ticker, type,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  __slice = [].slice;
+
+type = require('../utils/type');
+
+Engine = require('./engine');
+
+Input = require('./input');
+
+Ticker = require('./ticker');
+
+State = require('./state');
+
+EventEmitter = require('./event');
+
+FN = 0;
+
+BINDING = 1;
+
+ARGS = 2;
+
+Game = (function(_super) {
+  __extends(Game, _super);
+
+  Game.State = State.register;
+
+  function Game(initialState) {
+    Game.__super__.constructor.call(this);
+    this.input = new Input(this);
+    this.engine = new Engine(this);
+    this.ticker = new Ticker(this);
+    this.state = State.State(this);
+    this.ticker.on("ticker:tick", this.engine.update, this.engine);
+    this.engine.on("engine:updateFinished", this.input.clearKeyTimes, this.input);
+    if (type.of.string(initialState)) {
+      this.state.change(initialState);
+    }
+    return this;
+  }
+
+  Game.prototype.start = function() {
+    return this.emit('game:start', this.ticker.start());
+  };
+
+  Game.prototype.pause = function() {
+    return this.emit('game:pause', this.ticker.pause());
+  };
+
+  Game.prototype.resume = function() {
+    return this.emit('game:resume', this.ticker.resume());
+  };
+
+  Game.prototype.stop = function(clear) {
+    if (clear) {
+      this.engine.once('engine:clear', (function(_this) {
+        return function() {
+          return _this.emit('game:stop', _this.ticker.stop());
+        };
+      })(this));
+      return this.engine.clear();
+    } else {
+      return this.emit('game:stop', this.ticker.stop());
+    }
+  };
+
+  Game.prototype.setRenderer = function(renderer) {
+    this.renderer = renderer;
+  };
+
+  Game.prototype.setStage = function(stage) {
+    this.stage = stage;
+  };
+
+  Game.prototype.changeState = function() {
+    var args, _ref;
+    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    return (_ref = this.state).change.apply(_ref, args);
+  };
+
+  return Game;
+
+})(EventEmitter);
+
+module.exports = Game;
+
+
+
+},{"../utils/type":20,"./engine":6,"./event":8,"./input":10,"./state":12,"./ticker":13}],10:[function(require,module,exports){
+(function (global){
+var Input, _keys;
+
+_keys = {
+  "BACKSPACE": 8,
+  "TAB": 9,
+  "ENTER": 13,
+  "SHIFT": 16,
+  "CTRL": 17,
+  "ALT": 18,
+  "PAUSE_BREAK": 19,
+  "CAPS_LOCK ": 20,
+  "ESCAPE": 27,
+  "SPACE": 32,
+  "PAGE_UP": 33,
+  "PAGE_DOWN": 34,
+  "END": 35,
+  "HOME": 36,
+  "LEFT_ARROW": 37,
+  "UP_ARROW": 38,
+  "RIGHT_ARROW": 39,
+  "DOWN_ARROW": 40,
+  "INSERT": 45,
+  "DELETE": 46,
+  "0": 48,
+  "1": 49,
+  "2": 50,
+  "3": 51,
+  "4": 52,
+  "5": 53,
+  "6": 54,
+  "7": 55,
+  "8": 56,
+  "9": 57,
+  "A": 65,
+  "B": 66,
+  "C": 67,
+  "D": 68,
+  "E": 69,
+  "F": 70,
+  "G": 71,
+  "H": 72,
+  "I": 73,
+  "J": 74,
+  "K": 75,
+  "L": 76,
+  "M": 77,
+  "N": 78,
+  "O": 79,
+  "P": 80,
+  "Q": 81,
+  "R": 82,
+  "S": 83,
+  "T": 84,
+  "U": 85,
+  "V": 86,
+  "W": 87,
+  "X": 88,
+  "Y": 89,
+  "Z": 90,
+  "LEFT_WINDOW_KEY": 91,
+  "RIGHT_WINDOW_KEY": 92,
+  "SELECT_KEY": 93,
+  "NUMPAD_0": 96,
+  "NUMPAD_1": 97,
+  "NUMPAD_2": 98,
+  "NUMPAD_3": 99,
+  "NUMPAD_4": 100,
+  "NUMPAD_5": 101,
+  "NUMPAD_6": 102,
+  "NUMPAD_7": 103,
+  "NUMPAD_8": 104,
+  "NUMPAD_9": 105,
+  "MULTIPLY": 106,
+  "ADD": 107,
+  "SUBTRACT": 109,
+  "DECIMAL_POINT": 110,
+  "DIVIDE": 111,
+  "F1": 112,
+  "F2": 113,
+  "F3": 114,
+  "F4": 115,
+  "F5": 116,
+  "F6": 117,
+  "F7": 118,
+  "F8": 119,
+  "F9": 120,
+  "F10": 121,
+  "F11": 122,
+  "F12": 123,
+  "NUM_LOCK": 144,
+  "SCROLL_LOCK": 145,
+  "SEMI_COLON": 186,
+  "EQUAL_SIGN": 187,
+  "COMMA": 188,
+  "DASH": 189,
+  "PERIOD": 190,
+  "FORWARD_SLASH": 191,
+  "GRAVE_ACCENT": 192,
+  "OPEN_BRACKET": 219,
+  "BACK_SLASH": 220,
+  "CLOSE_BRACKET": 221,
+  "SINGLE_QUOTE": 222
+};
+
+Input = (function() {
+  function Input() {
+    this._pressedKeys = [];
+    this._pressedKeysTime = [];
+    this._oncePressedKeys = [];
+    this._mousePosition = {
+      x: 0,
+      y: 0
+    };
+    global.addEventListener("keydown", (function(_this) {
+      return function(e) {
+        var keyCode;
+        keyCode = e.keyCode;
+        _this._pressedKeys[keyCode] = true;
+        if (!_this._pressedKeysTime[keyCode]) {
+          _this._pressedKeysTime[keyCode] = performance.now();
+        }
+      };
+    })(this));
+    global.addEventListener("keyup", (function(_this) {
+      return function(e) {
+        var keyCode;
+        keyCode = e.keyCode;
+        _this._pressedKeys[keyCode] = false;
+        if ((_this._pressedKeysTime[keyCode] != null) && (_this._oncePressedKeys[keyCode] == null)) {
+          _this._pressedKeysTime[keyCode] = performance.now() - _this._pressedKeysTime[keyCode];
+          _this._oncePressedKeys[keyCode] = true;
+        }
+      };
+    })(this));
+  }
+
+  Input.prototype.isPressed = function(keyName) {
+    return this._pressedKeys[_keys[keyName]];
+  };
+
+  Input.prototype.getPressedKeys = function() {
+    var keyName, keys, _i, _len, _ref;
+    keys = {};
+    _ref = Object.keys(_keys);
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      keyName = _ref[_i];
+      keys[keyName] = this._pressedKeys[_keys[keyName]];
+    }
+    return keys;
+  };
+
+  Input.prototype.getKeysPressedLessThan = function(time) {
+    var keyCode, keyName, keys, _i, _len, _ref;
+    keys = {};
+    _ref = Object.keys(_keys);
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      keyName = _ref[_i];
+      keyCode = _keys[keyName];
+      if (this._pressedKeysTime[keyCode] < time && this._oncePressedKeys[keyCode]) {
+        keys[keyName] = true;
+      }
+    }
+    return keys;
+  };
+
+  Input.prototype.getKeysPressedMoreThan = function(time) {
+    var keyCode, keyName, keys, _i, _len, _ref;
+    keys = {};
+    _ref = Object.keys(_keys);
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      keyName = _ref[_i];
+      keyCode = _keys[keyName];
+      if (this._pressedKeysTime[keyCode] > time && this._oncePressedKeys[keyCode]) {
+        keys[keyName] = true;
+      }
+    }
+    return keys;
+  };
+
+  Input.prototype.setMouseStagePosition = function(position) {
+    return this._mousePosition = position;
+  };
+
+  Input.prototype.getMouseStagePosition = function() {
+    return this._mousePosition;
+  };
+
+  Input.prototype.clearKeyTimes = function() {
+    this._pressedKeysTime = [];
+    return this._oncePressedKeys = [];
+  };
+
+  return Input;
+
+})();
+
+module.exports = Input;
+
+
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],11:[function(require,module,exports){
+var canModify, componentPatterns, config, debug, entityPatterns, nextComponentId, systemPatterns, type;
+
+type = require('../utils/type');
+
+debug = require('../debug/debug');
+
+config = require('../config/config');
+
+canModify = true;
+
+componentPatterns = {};
+
+systemPatterns = {};
+
+entityPatterns = {};
+
+nextComponentId = 0;
+
+module.exports = {
+  registerComponent: function(component) {
+    if (!canModify) {
+      debug.error('you can\'t define new component during system work');
+      return;
+    }
+    if (!type.of.object(component)) {
+      debug.error('component pattern must be an object');
+      return;
+    }
+    if (!('name' in component) || !('initialize' in component)) {
+      debug.error('you must define both "name" and "initialize" of component pattern');
+      return;
+    }
+    if (component.name in componentPatterns) {
+      debug.error('you can\'t define same component twice');
+      return;
+    }
+    component._bit = nextComponentId++;
+    return componentPatterns[component.name.toLowerCase()] = component;
+  },
+  registerSystem: function(system) {
+    if (!canModify) {
+      debug.error('you can\'t define new system during system work');
+      return;
+    }
+    if (!type.of.object(system)) {
+      debug.error('system pattern must be an object');
+      return;
+    }
+    if (!('name' in system) || !('update' in system)) {
+      debug.error('you must define both "name" and "update" of system pattern');
+      return;
+    }
+    if (system.name in systemPatterns) {
+      debug.error('you can\'t define same system twice');
+      return;
+    }
+    return systemPatterns[system.name] = system;
+  },
+  registerEntity: function(entity) {
+    if (!canModify) {
+      debug.error('you can\'t define new system during system work');
+      return;
+    }
+    if (!type.of.object(entity)) {
+      debug.error('entity pattern must be an object');
+      return;
+    }
+    if (!('name' in entity) || !('create' in entity)) {
+      debug.error('you must define both "name" and "create" of entity pattern');
+      return;
+    }
+    if (entity.name in entityPatterns) {
+      debug.error('you can\'t define same entity twice');
+      return;
+    }
+    if ((entity.family == null) || entity.family === '') {
+      entity.family = 'NONE';
+    }
+    entity._families = entity.family.split('|');
+    return entityPatterns[entity.name] = entity;
+  },
+  getComponentPattern: function(name) {
+    return componentPatterns[name.toLowerCase()];
+  },
+  getSystemPattern: function(name) {
+    return systemPatterns[name];
+  },
+  getEntityPattern: function(name) {
+    return entityPatterns[name];
+  },
+  canModify: function() {
+    return canModify;
+  },
+  setCannotModify: function() {
+    return canModify = false;
+  }
+};
+
+
+
+},{"../config/config":5,"../debug/debug":14,"../utils/type":20}],12:[function(require,module,exports){
+var debug, states, type,
+  __slice = [].slice;
+
+type = require('../utils/type');
+
+debug = require('../debug/debug');
+
+states = {};
+
+exports.State = function(game) {
+  var currentState, doTransition, enterState, exitState, initializeState, next, queue, setCurrentState, setInitialized, shift, shifting;
+  queue = [];
+  currentState = {
+    transitions: {}
+  };
+  shifting = false;
+  shift = function() {
+    var args, binding, fn, queueHead;
+    queueHead = queue.shift();
+    if (queueHead == null) {
+      shifting = false;
+      return;
+    } else {
+      shifting = true;
+    }
+    fn = queueHead.fn;
+    binding = queueHead.binding || null;
+    args = queueHead.args || [];
+    args.push(next);
+    return fn.apply(binding, args);
+  };
+  next = function() {
+    return shift();
+  };
+  setCurrentState = function(state, done) {
+    currentState = state;
+    return done();
+  };
+  setInitialized = function(state, done) {
+    state._initialized = true;
+    return done();
+  };
+  initializeState = function(state, done) {
+    if (type.of["function"](state.initialize)) {
+      return state.initialize.apply(state, [game, done]);
+    } else {
+      return done();
+    }
+  };
+  enterState = function(state, done) {
+    if (type.of["function"](state.onEnter)) {
+      return state.onEnter.apply(state, [game, done]);
+    } else {
+      return done();
+    }
+  };
+  exitState = function(done) {
+    if (type.of["function"](currentState.onExit)) {
+      return currentState.onExit.apply(currentState, [game, done]);
+    } else {
+      return done();
+    }
+  };
+  doTransition = function() {
+    var args, done, nextState, to, transitionFnName;
+    to = arguments[0], nextState = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
+    if (to in currentState.transitions) {
+      transitionFnName = currentState.transitions[to];
+      return currentState[transitionFnName].apply(currentState, [game, nextState].concat(args));
+    } else {
+      done = args.pop();
+      return done();
+    }
+  };
+  return {
+    change: function() {
+      var args, name, nextState;
+      name = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      if (!type.of.string(name) || !(name in states)) {
+        debug.error('state "' + name + '" does not exist - change will not occur');
+        return;
+      }
+      nextState = states[name];
+      queue.push({
+        fn: exitState
+      });
+      if (!nextState._initialized) {
+        queue.push({
+          fn: initializeState,
+          args: [nextState]
+        });
+        queue.push({
+          fn: setInitialized,
+          args: [nextState]
+        });
+      }
+      queue.push({
+        fn: doTransition,
+        args: [name, nextState].concat(args)
+      });
+      queue.push({
+        fn: enterState,
+        args: [nextState]
+      });
+      queue.push({
+        fn: setCurrentState,
+        args: [nextState]
+      });
+      if (!shifting) {
+        return shift();
+      }
+    },
+    current: function() {
+      return currentState.name;
+    },
+    isIn: function(state) {
+      return state === currentState.name;
+    }
+  };
+};
+
+exports.register = function(state) {
+  if (!type.of.object(state)) {
+    debug.error('registered state must be an object');
+    return this;
+  }
+  if (!('transitions' in state)) {
+    state.transitions = {};
+  }
+  state._initialized = false;
+  states[state.name] = state;
+  return this;
+};
+
+
+
+},{"../debug/debug":14,"../utils/type":20}],13:[function(require,module,exports){
+(function (global){
+var EventEmitter, Ticker, config, raf,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+config = require('../config/config');
+
+raf = global.requestAnimationFrame;
+
+EventEmitter = require('./event');
+
+Ticker = (function(_super) {
+  __extends(Ticker, _super);
+
+  function Ticker() {
+    Ticker.__super__.constructor.call(this);
+    this.FPS = config('default_fps');
+    this.MAX_FRAME_TIME = config('max_frame_time');
+    this.TIME_FACTOR = config('default_time_factor');
+    this._paused = false;
+    this._running = false;
+    this._ticks = 0;
+    this._lastTime = 0;
+    this._currentFPS = this.FPS;
+    this._rafId = -1;
+  }
+
+  Ticker.prototype.setFPS = function(fps) {
+    return this.FPS = fps || this.FPS;
+  };
+
+  Ticker.prototype.getCurrentFPS = function() {
+    return Math.round(this._currentFPS);
+  };
+
+  Ticker.prototype.setTimeFactor = function(factor) {
+    return this.TIME_FACTOR = factor || this.TIME_FACTOR;
+  };
+
+  Ticker.prototype.getTicks = function() {
+    return this._ticks;
+  };
+
+
+  /**
+   * Pauses ticker.
+   * 
+   * @return {Boolean} true if paused succesfuly
+   */
+
+  Ticker.prototype.pause = function() {
+    if (!this._running) {
+      return false;
+    }
+    this._paused = true;
+    return true;
+  };
+
+
+  /**
+   * Resumes ticker.
+   * 
+   * @return {Boolean} true if resumed succesfuly
+   */
+
+  Ticker.prototype.resume = function() {
+    if (!this._running) {
+      return false;
+    }
+    this._paused = false;
+    return true;
+  };
+
+  Ticker.prototype.start = function() {
+    if (this._paused) {
+      this.resume();
+    }
+    if (this._running) {
+      return false;
+    }
+    this._rafId = raf(this._tick.bind(this));
+    this.emit('ticker:start');
+    this._running = true;
+    return true;
+  };
+
+  Ticker.prototype.stop = function() {
+    if (this._rafId !== -1) {
+      global.cancelAnimationFrame(this._rafId);
+      this._running = this._paused = false;
+      this.emit('ticker:stop');
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  Ticker.prototype.toggle = function() {
+    if (!this._running) {
+      return false;
+    }
+    this._paused = !this._paused;
+    return true;
+  };
+
+  Ticker.prototype.isPaused = function() {
+    return this._paused;
+  };
+
+  Ticker.prototype.isRunning = function() {
+    return this._running && !this._paused;
+  };
+
+  Ticker.prototype._tick = function(time) {
+    var delta, event;
+    if (time == null) {
+      time = performance.now();
+    }
+    delta = time - this._lastTime;
+    this._lastTime = time;
+    this._rafId = raf(this._tick.bind(this));
+    if (this._paused) {
+      return;
+    }
+    if (delta >= this.MAX_FRAME_TIME) {
+      delta = 1000 / this.FPS;
+    }
+    if (this._ticks % this.FPS === 0) {
+      this._currentFPS = 1000 / delta;
+    }
+    event = {
+      delta: delta * this.TIME_FACTOR,
+      tick: this._ticks,
+      time: time,
+      paused: this._paused
+    };
+    this.emit('ticker:tick', event);
+    return this._ticks += 1;
+  };
+
+  return Ticker;
+
+})(EventEmitter);
+
+module.exports = Ticker;
+
+
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../config/config":5,"./event":8}],14:[function(require,module,exports){
+var config,
+  __slice = [].slice;
+
+config = require('../config/config');
+
+module.exports = {
+  log: function() {
+    var message;
+    message = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    if (config('debug') >= 3) {
+      return console.log.apply(console, message);
+    }
+  },
+  warning: function() {
+    var message;
+    message = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    if (config('debug') >= 2) {
+      return console.warn.apply(console, message);
+    }
+  },
+  error: function() {
+    var message;
+    message = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    if (config('debug') >= 1) {
+      return console.error.apply(console, message);
+    }
+  }
+};
+
+
+
+},{"../config/config":5}],15:[function(require,module,exports){
+var Const, Engine, Entropy, LinkedList, OrderedLinkedList, config, debug;
+
+require('./utils/polyfill');
+
+debug = require('./debug/debug');
+
+config = require('./config/config');
+
+Const = require('./utils/const');
+
+Engine = require('./core/engine');
+
+LinkedList = require('./collection/doublylinkedlist');
+
+OrderedLinkedList = require('./collection/orderedlinkedlist');
+
 
 /**
-* @author       Tymoteusz Dzienniak <tymoteusz.dzienniak@outlook.com>
-* @license      {@link https://github.com/RainPhilosopher/Entropy/blob/master/LICENSE|MIT License}
-*/
+ * Welcome message.
+ */
 
-(function () {
+console.log.apply(console, ["%c %c %c Entropy 0.2.0 - Entity System Framework for JavaScript %c %c ", "background: rgb(200, 200,200);", "background: rgb(80, 80, 80);", "color: white; background: black;", "background: rgb(80, 80, 80);", "background: rgb(200, 200, 200);"]);
 
-/* Fancy intro message */
-console.log(
-    "%c %c %c Entropy 0.1 - Entity System Framework for JavaScript %c %c ",
-    "background: rgb(200, 200,200);", 
-    "background: rgb(80, 80, 80);",
-    "color: white; background: black;",
-    "background: rgb(80, 80, 80);",
-    "background: rgb(200, 200, 200);"
-);
 
-var root = {};
+/**
+ *
+ */
 
-(function (Entropy) {
-    "use strict";
-    
-    var Utils = {
-        isString: function (value) {
-            return typeof value === "string" || value instanceof String;
-        },
-        isObject: function (value) {
-            return typeof value === "object";
-        },
-        isArray: function (value) {
-            return Object.prototype.toString.call(value) === '[object Array]'; 
-        },
-        isUndefined: function (value) {
-            return typeof value === "undefined";
-        },
-        extend: function (destination) {
-            var sources = this.slice(arguments, 1);
+Entropy = (function() {
+  Entropy.Easing = require('./utils/easing');
 
-            sources.forEach(function (source) {
-                for (var property in source) {
-                    if (source.hasOwnProperty(property)) {
-                        destination[property] = source[property];
-                    }
-                }
-            });
-        },
-        slice: function (arr, index) {
-            return Array.prototype.slice.call(arr, index);
-        }
-    };
+  Entropy.Const = function(key, value) {
+    return Const.call(this, key, value);
+  };
 
-    Entropy.Utils = Utils;
-    
-})(root);
+  Entropy.Config = config;
 
-(function (Entropy) {
-    "use strict";
+  Entropy.Game = require('./core/game');
 
-    var Utils = Entropy.Utils;
+  Entropy.Engine = Engine;
 
-    function EventEmitter () {
-        this._events = {};
-    }
+  Entropy.Ticker = require('./core/ticker');
 
-    Utils.extend(EventEmitter.prototype, {
-        on: function (event, fn, binding, once) {
-            once = once || false;
+  Entropy.LinkedList = LinkedList;
 
-            if (typeof binding !== "object") {
-                binding = null;
-            }
+  Entropy.OrderedLinkedList = OrderedLinkedList;
 
-            if (!(event in this._events)) {
-                this._events[event] = {
-                    listeners: []
-                };
-            }
-
-            this._events[event].listeners.push({
-                fn: fn,
-                binding: binding,
-                once: once
-            });
-        },
-        once: function (event, fn, binding) {
-            this.on(event, fn, binding, true);
-        },
-        emit: function (event, eventObject) {
-            if (!(event in this._events)) {
-                return;  
-            }
-
-            var i = 0;
-            var listener;
-
-            while (i < this._events[event].listeners.length) {
-                listener = this._events[event].listeners[i];
-
-                listener.fn.call(listener.binding, eventObject);
-
-                if (listener.once) {
-                    this._events[event].listeners.splice(i, 1);
-                } else {
-                    i += 1;
-                }
-            }
-        },
-        off: function (event, fn) {
-            if (!(event in this._events)) {
-                return;
-            }
-
-            for (var i = 0; i < this._events[event].listeners.length; i += 1) {
-                if (this._events[event].listeners[i].fn === fn) {
-                    this._events[event].listeners.splice(i, 1);
-                    return;
-                }
-            }
-        },
-        allOff: function () {
-            this._events = {};
-        }
-    });
-
-    Entropy.EventEmitter = EventEmitter;
-
-})(root);
-
-
-(function (Entropy) {
-
-    var Utils = Entropy.Utils;
-    var EventEmitter = Entropy.EventEmitter;
-    
-    var VERSION = 0.1;
-
-    Entropy.DEBUG = true;
-
-    Entropy.getVersion = function () {
-        return "v" + VERSION;
-    };
-
-    Entropy.log = function (message) {
-        if (Entropy.DEBUG) {
-            console.log(["Entropy:", message].join(" "));
-        }
-    };
-
-    Entropy.error = function (message) { 
-        throw new Error(["Entropy:", message].join(" "));
-    };
-
-    Entropy.warning = function (message) {
-        if (Entropy.DEBUG) {
-            console.warn(["Entropy:", message].join(" "));
-        }
-    };
-
-    Entropy.Const = function (name, value) {
-        if (typeof name !== "string" || name === "") {
-            Entropy.error("constans name should be non-empty string.");
-        }
-
-        name = name.toUpperCase();
-
-        if (Entropy.hasOwnProperty(name)) {
-            Entropy.error("can't define same constans twice.");
-        } else {
-            Object.defineProperty(Entropy, name, {
-                value: value
-            });
-        }
-    };
-
-    EventEmitter.call(Entropy);
-    Utils.extend(Entropy, EventEmitter.prototype);
-
-})(root);
-
-(function (Entropy) {
-    "use strict";
-    
-    /**
-     * Easing functions by Robert Panner
-     * http://www.robertpenner.com/easing/
-     *
-     * t: current time, b: beginning value, c: change in value, d: duration
-     */
-
-    var Easing = {
-        Linear: {
-            In: function (t, b, c, d) {
-                return c * t / d + b;
-            }
-        },
-        Quadratic: {
-            In: function (t, b, c, d) {
-                t /= d;
-                return c * t * t + b;
-            },
-            Out: function (t, b, c, d) {
-                t /= d;
-                return -c * t*(t-2) + b;
-            },
-            InOut: function (t, b, c, d) {
-                t /= d / 2;
-                if (t < 1) return c / 2 * t * t + b;
-                t--;
-                return -c / 2 * (t * (t - 2) - 1) + b;
-            }
-        },
-        Cubic: {
-            In: function (t, b, c, d) {
-                t /= d;
-                return c*t*t*t + b;
-            },
-            Out: function (t, b, c, d) {
-                t /= d;
-                t--;
-                return c*(t*t*t + 1) + b;
-            },
-            InOut: function (t, b, c, d) {
-                t /= d/2;
-                if (t < 1) return c/2*t*t*t + b;
-                t -= 2;
-                return c/2*(t*t*t + 2) + b;
-            }
-        },
-        Quartic: {
-            In: function (t, b, c, d) {
-                t /= d;
-                return c*t*t*t*t + b;
-            },
-            Out: function (t, b, c, d) {
-                t /= d;
-                t--;
-                return -c * (t*t*t*t - 1) + b;
-            },
-            InOut: function (t, b, c, d) {
-                t /= d/2;
-                if (t < 1) return c/2*t*t*t*t + b;
-                t -= 2;
-                return -c/2 * (t*t*t*t - 2) + b;
-            }
-        },
-        Quintic: {
-            In: function (t, b, c, d) {
-                t /= d;
-                return c*t*t*t*t*t + b;
-            },
-            Out: function (t, b, c, d) {
-                t /= d;
-                t--;
-                return c*(t*t*t*t*t + 1) + b;
-            },
-            InOut: function (t, b, c, d) {
-                t /= d/2;
-                if (t < 1) return c/2*t*t*t*t*t + b;
-                t -= 2;
-                return c/2*(t*t*t*t*t + 2) + b;
-            }
-        },
-        Sine: {
-            In: function (t, b, c, d) {
-                return -c * Math.cos(t/d * (Math.PI/2)) + c + b;
-            },
-            Out: function (t, b, c, d) {
-                return c * Math.sin(t/d * (Math.PI/2)) + b;
-            },
-            InOut: function (t, b, c, d) {
-                return -c/2 * (Math.cos(Math.PI*t/d) - 1) + b;
-            }
-        },
-        Exponential: {
-            In: function (t, b, c, d) {
-                return c * Math.pow( 2, 10 * (t/d - 1) ) + b;
-            },
-            Out: function (t, b, c, d) {
-                return c * ( -Math.pow( 2, -10 * t/d ) + 1 ) + b;
-            },
-            InOut: function (t, b, c, d) {
-                t /= d/2;
-                if (t < 1) return c/2 * Math.pow( 2, 10 * (t - 1) ) + b;
-                t--;
-                return c/2 * ( -Math.pow( 2, -10 * t) + 2 ) + b;
-            }
-        },
-        Circular: {
-            In: function (t, b, c, d) {
-                t /= d;
-                return -c * (Math.sqrt(1 - t*t) - 1) + b;
-            },
-            Out: function (t, b, c, d) {
-                t /= d;
-                t--;
-                return c * Math.sqrt(1 - t*t) + b;
-            },
-            InOut: function (t, b, c, d) {
-                t /= d/2;
-                if (t < 1) return -c/2 * (Math.sqrt(1 - t*t) - 1) + b;
-                t -= 2;
-                return c/2 * (Math.sqrt(1 - t*t) + 1) + b;
-            }
-        }
-    };
-
-    Entropy.Easing = Easing;
-
-})(root);
-
-(function (Entropy) {
-
-    function degToRad(degrees) {
-        return degrees * Math.PI / 180;
-    }
-
-    function radToDeg(radians) {
-        return radians * 180 / Math.PI;
-    }
-
-    var Vector = function (coords) {
-        if (Object.prototype.toString.call(coords) === "[object Array]") {
-            this.x = coords[0];
-            this.y = coords[1];
-            this.updatePolarCoords();
-        } else if (typeof coords === 'object') {
-            if (typeof coords.x === 'undefined') { //podano wspórzędne biegunowe
-                this.angle = 0;
-                this.rotate(coords.angle);
-
-                this.length = coords.length;
-
-                //uzupełnianie wspórzędnych kartezjańskich
-                this.updateCartCoords();
-            } else { //podano wspórzędne kartezjańskie
-                this.x = coords.x;
-                this.y = coords.y;
-
-                //uzupełnianie współrzędnych biegunowych
-                this.updatePolarCoords();
-            }
-        } else {
-            throw new Error('Podałeś zły format współrzędnych!');
-        }
-    };
-
-    var v = Vector.prototype;
-
-    v.rotate = function (angle, return_new) {
-        angle %= 360;
-        return_new = return_new || false;
-
-        if (return_new) {
-            return new Vector({length: this.length, angle: this.angle + angle});
-        } else {
-            this.angle += angle;
-            this.angle %= 360;
-
-            this.updateCartCoords();
-
-            return this;
-        }
-    };
-
-    v.rotateRad = function (angle, return_new) {
-        angle = angle % (2 * Math.PI);
-        return_new = return_new || false;
-
-        if (return_new) {
-            return new Vector({length: this.length, angle: this.angle + radToDeg(angle)});
-        } else {
-            this.rotate(radToDeg(angle));
-
-            return this;
-        }
-    };
-
-    v.add = function (vector, return_new) {
-        return_new = return_new || false;
-        var x, y;
-
-        if (Object.prototype.toString.call(vector) === "[object Array]") {
-            x = vector[0];
-            y = vector[1];
-        } else if (typeof vector === 'object') {
-            x = vector.x;
-            y = vector.y;
-        } else {
-            throw new Error('Zły parametr.');
-        }
-
-        if (return_new) { //zwraca nowy wektor, nie modyfikuje obecnego
-            return new Vector([this.x + x, this.y + y]);
-        } else {
-            this.x += x;
-            this.y += y;
-
-            this.updatePolarCoords();
-
-            return this;
-        }
-    };
-
-    v.scale = function (scalar, return_new) {
-        return_new = return_new || false;
-
-        if (return_new) { //zwraca nowy wektor, nie modyfikuje obecnego
-            return new Vector([this.x * scalar, this.y * scalar]);
-        } else {
-            this.x *= scalar;
-            this.y *= scalar;
-
-            this.updatePolarCoords();
-        }
-
-        return this;
-    };
-
-    v.setAngle = function (angle, return_new) {
-        return_new = return_new || false;
-
-        if (return_new) {
-            return new Vector({length: this.length, angle: angle});
-        } else {
-            this.angle = 0;
-            this.rotate(angle);
-
-            return this;
-        }
-    };
-
-    v.getRadAngle = function () {
-        return degToRad(this.angle);
-    };
-
-    v.truncate = function (desiredLength, return_new) {
-        return_new = return_new || false;
-
-        if (return_new) { //zwraca nowy wektor, nie modyfikuje obecnego
-            return new Vector({
-                angle: this.angle,
-                length: desiredLength
-            });
-        } else {
-            this.length = desiredLength;
-            this.updateCartCoords();
-        }
-
-        return this;
-    };
-
-    v.normalize = function (return_new) {
-        return this.truncate(1, return_new);
-    };
-
-    v.substract = function (vector, return_new) {
-        return_new = return_new || false;
-        var x, y;
-
-        if (Object.prototype.toString.call(vector) === "[object Array]") {
-            x = vector[0];
-            y = vector[1];
-        } else if (typeof vector === 'object') {
-            x = vector.x;
-            y = vector.y;
-        } else {
-            throw new Error('Zły parametr.');
-        }
-
-        if (return_new) { //zwraca nowy wektor, nie modyfikuje obecnego
-            return new Vector([this.x - x, this.y - y]);
-        } else {
-            this.x -= x;
-            this.y -= y;
-
-            this.updatePolarCoords();
-
-            return this;
-        }
-    };
-
-    v.dot = function (vector) {
-        var scalar;
-
-        if (Object.prototype.toString.call(vector) === "[object Array]") {
-            scalar = this.x * vector[0] + this.y * vector[1];
-        } else if (typeof vector === 'object') {
-            scalar = this.x * vector.x + this.y * vector.y;
-        } else {
-            throw new Error('Zły parametr.');
-        }
-
-        return scalar;
-    };
-
-    v.reverseX = function (return_new) {
-        return_new = return_new || false;
-
-        if (return_new) {
-            return new Vector([-this.x, this.y]);
-        } else {
-            this.x = -this.x;
-            this.updatePolarCoords();
-        }
-    };
-
-    v.reverseY = function (return_new) {
-        return_new = return_new || false;
-
-        if (return_new) {
-            return new Vector([this.x, -this.y]);
-        } else {
-            this.y = -this.y;
-            this.updatePolarCoords();
-        }
-    };
-
-    v.reverseBoth = function (return_new) {
-        return_new = return_new || false;
-
-        if (return_new) {
-            return new Vector([-this.x, -this.y]);
-        } else {
-            this.x = -this.x;
-            this.y = -this.y;
-            this.updatePolarCoords();
-        }
-
-        return this;
-    };
-
-    v.minAngleTo = function (vector) {
-        if (this.angle < 0) {
-            this.angle += 360;
-        }
-
-        if (vector.angle < 0) {
-            vector.angle += 360;
-        }
-
-        var angle = vector.angle - this.angle;
-
-        if (angle > 180) {
-            angle = 360 + this.angle - vector.angle;
-        } else if (angle < -180) {
-            angle = 360 - this.angle + vector.angle;
-        }
-
-        return angle;
-    };
-
-    v.negate = function (return_new) {
-        return this.reverseBoth(return_new);
-    };
-
-    v.clone = function () {
-        return new Vector([this.x, this.y]);
-    };
-
-    v.updatePolarCoords = function () {
-        this.length = Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
-
-        this.angle = 0;
-        this.rotate(radToDeg(Math.atan2(this.y, this.x) + 2 * Math.PI));
-    };
-
-    v.updateCartCoords = function () {
-        this.x = Math.cos(degToRad(this.angle)) * this.length;
-        this.y = Math.sin(degToRad(this.angle)) * this.length;
-        //this.y = (this.angle === 180 || this.angle === -180) ? 0 : Math.sin(this.angle * Math.PI / 180) * this.length
-    };
-
-    v.debug = function () {
-        return "x: " + this.x + ", y: " + this.y + ", angle: " + this.angle + ", length: " + this.length;
-    };
-
-    Entropy.Vector = Vector;
-    
-})(root);
-
-(function (Entropy) {
-    "use strict";
-    
-    /**
-     * Linked list conctructor.
-     * It initializes head and tail properties with null value.
-     */
-    function OrderedLinkedList () {
-        this.head = this.tail = null;
-    }
-
-    /**
-     * Returns node object.
-     * @param {any} data data to store in node
-     */
-    function Node (data) {
-            this.next = null;
-            this.priority = null;
-            this.data = data;
-    }
-
-    OrderedLinkedList.prototype = {
-
-        /**
-         * Adds new node at the end of the list.
-         * Function is only a syntactic sugar.
-         * @param  {any} data any valid JavaScript data
-         * @return {OrderedLinkedList} this
-         */
-        append: function (data) {
-            return this.insert(data);
-        },
-
-        /**
-         * Removes given node (or node with given data) from list.
-         * @param  {Node|data} node
-         * @return {undefined}
-         */
-        remove: function (node) {
-            if (node === this.head || node === this.head.data) {
-                this.head = this.head.next;
-
-                return this;
-            }
-
-            var i = this.head;
-
-            while (i.next !== node && i.next.data !== node) {
-                i = i.next;
-            }
-
-            i.next = node.next;
-
-            if (node === this.tail || node === this.tail.data) {
-                this.tail = i;
-            }
-
-            node = null;
-
-            return this;
-        },
-        /**
-         * Insert new node into list.
-         * 
-         * @param  {any} data     data to store in list node
-         * @param  {number} priority [optional] if specified, function inserts data before node with higher priority
-         * @return {object}       list instance             
-         */
-        insert: function (data, priority) {
-            var node = new Node(data);
-
-            /*
-             * list is empty
-             */
-            if (this.head === null) {
-                node.priority = priority || 0;
-                this.head = this.tail = node;
-
-                return this;
-            }
-
-            var current = this.head;
-
-            node.priority = priority || this.tail.priority;
-
-            /*
-             * list contains only one node (head === tail)
-             */
-            if (current.next === null) {
-                if (current.priority <= node.priority) {
-                    current.next = node;
-                    this.tail = current.next;
-                } else {
-                    this.head = node;
-                    this.head.next = this.tail = current;
-                }
-
-                return this;
-            }
-
-            /*
-             * node priority is greater or equal tail priority
-             * node should become tail
-             */
-            if (node.priority >= this.tail.priority) {
-                this.tail.next = node;
-                this.tail = node;
-
-                return this;
-            }
-
-            /*
-             * node priority is less than head priority
-             * node should become head
-             */
-            if (node.priority < this.head.priority) {
-                node.next = this.head;
-                this.head = node;
-
-                return this;
-            }
-
-            /*
-             * list has more than one node
-             */
-            while (current.next !== null) { 
-               if (current.next.priority > node.priority) {
-                    node.next = current.next;
-                    current.next = node;
-
-                    break;
-                }
-
-                current = current.next;
-            }
-
-            return this;
-        },
-        /**
-         * Iterates over all list nodes, starting from head, calling function for every node.
-         * @param  {Function} fn [description]
-         * @return {[type]}      [description]
-         */
-        iterate: function (fn) {
-            for (var node = this.head; node; node = node.next) {
-                fn(this, node);
-            }
-        },
-        /**
-         * Clears list.
-         * @return {[type]} [description]
-         */
-        clear: function () {
-            this.head = this.tail = null;
-        }
-    };
-
-    Entropy.OrderedLinkedList = OrderedLinkedList;
-})(root);
-
-(function (Entropy) {
-
-    function Pool () {
-        this.size = 0;
-        this.pool = {};
-    }
-
-    Entropy.Utils.extend(Pool.prototype, {
-        push: function (key, value) {
-            if (!(key in this.pool)) {
-                this.pool[key] = [];
-            }
-
-            this.size += 1;
-
-            return this.pool[key].push(value);
-        },
-        pop: function (key) {
-            if (this.has(key)) {
-                this.size -= 1;
-
-                return this.pool[key].pop();
-            } else {
-                return false;
-            }
-        },
-        has: function (key) {
-            return key in this.pool && this.pool[key].length > 0;
-        },
-        size: function () {
-            return this.size;
-        }
-    });
-
-    Entropy.Pool = Pool;
-})(root);
-
-// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
- 
-// requestAnimationFrame polyfill by Erik Möller
-// fixes from Paul Irish and Tino Zijdel
- 
-(function() {
-    var lastTime = 0;
-    var vendors = ['ms', 'moz', 'webkit', 'o'];
-    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
-    }
- 
-    if (!window.requestAnimationFrame)
-        window.requestAnimationFrame = function(callback, element) {
-            var currTime = new Date().getTime();
-            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
-              timeToCall);
-            lastTime = currTime + timeToCall;
-            return id;
-        };
- 
-    if (!window.cancelAnimationFrame)
-        window.cancelAnimationFrame = function(id) {
-            clearTimeout(id);
-        };
-}());
-
-// perf.now polyfill by Paul Irish
-// relies on Date.now() which has been supported everywhere modern for years.
-// as Safari 6 doesn't have support for NavigationTiming, we use a Date.now() timestamp for relative values
- 
-// if you want values similar to what you'd get with real perf.now, place this towards the head of the page
-// but in reality, you're just getting the delta between now() calls, so it's not terribly important where it's placed
- 
-(function(){
- 
-  // prepare base perf object
-  if (typeof window.performance === 'undefined') {
-      window.performance = {};
+  function Entropy() {
+    debug.warning('this function should not be used as a constructor');
+    return;
   }
- 
-  if (!window.performance.now){
-    
-    var nowOffset = Date.now();
- 
-    if (performance.timing && performance.timing.navigationStart){
+
+  return Entropy;
+
+})();
+
+module.exports = Entropy;
+
+
+
+},{"./collection/doublylinkedlist":2,"./collection/orderedlinkedlist":3,"./config/config":5,"./core/engine":6,"./core/game":9,"./core/ticker":13,"./debug/debug":14,"./utils/const":16,"./utils/easing":17,"./utils/polyfill":19}],16:[function(require,module,exports){
+var debug, type;
+
+type = require('./type');
+
+debug = require('../debug/debug');
+
+module.exports = function(key, value) {
+  if ((key == null) || !type.of.string(key)) {
+    debug.error('constans key should be non-empty string');
+    return;
+  }
+  key = key.toUpperCase();
+  if (key in this) {
+    return debug.error('cannot define same constans twice: %s', key);
+  } else {
+    Object.defineProperty(this, key, {
+      value: value
+    });
+    return value;
+  }
+};
+
+
+
+},{"../debug/debug":14,"./type":20}],17:[function(require,module,exports){
+module.exports = {
+  Linear: {
+    In: function(t, b, c, d) {
+      return c * t / d + b;
+    }
+  },
+  Quadratic: {
+    In: function(t, b, c, d) {
+      t /= d;
+      return c * t * t + b;
+    },
+    Out: function(t, b, c, d) {
+      t /= d;
+      return -c * t * (t - 2) + b;
+    },
+    InOut: function(t, b, c, d) {
+      t /= d / 2;
+      if (t < 1) {
+        return c / 2 * t * t + b;
+      }
+      t--;
+      return -c / 2 * (t * (t - 2) - 1) + b;
+    }
+  },
+  Cubic: {
+    In: function(t, b, c, d) {
+      t /= d;
+      return c * t * t * t + b;
+    },
+    Out: function(t, b, c, d) {
+      t /= d;
+      t--;
+      return c * (t * t * t + 1) + b;
+    },
+    InOut: function(t, b, c, d) {
+      t /= d / 2;
+      if (t < 1) {
+        return c / 2 * t * t * t + b;
+      }
+      t -= 2;
+      return c / 2 * (t * t * t + 2) + b;
+    }
+  },
+  Quartic: {
+    In: function(t, b, c, d) {
+      t /= d;
+      return c * t * t * t * t + b;
+    },
+    Out: function(t, b, c, d) {
+      t /= d;
+      t--;
+      return -c * (t * t * t * t - 1) + b;
+    },
+    InOut: function(t, b, c, d) {
+      t /= d / 2;
+      if (t < 1) {
+        return c / 2 * t * t * t * t + b;
+      }
+      t -= 2;
+      return -c / 2 * (t * t * t * t - 2) + b;
+    }
+  },
+  Quintic: {
+    In: function(t, b, c, d) {
+      t /= d;
+      return c * t * t * t * t * t + b;
+    },
+    Out: function(t, b, c, d) {
+      t /= d;
+      t--;
+      return c * (t * t * t * t * t + 1) + b;
+    },
+    InOut: function(t, b, c, d) {
+      t /= d / 2;
+      if (t < 1) {
+        return c / 2 * t * t * t * t * t + b;
+      }
+      t -= 2;
+      return c / 2 * (t * t * t * t * t + 2) + b;
+    }
+  },
+  Sine: {
+    In: function(t, b, c, d) {
+      return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;
+    },
+    Out: function(t, b, c, d) {
+      return c * Math.sin(t / d * (Math.PI / 2)) + b;
+    },
+    InOut: function(t, b, c, d) {
+      return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
+    }
+  },
+  Exponential: {
+    In: function(t, b, c, d) {
+      return c * Math.pow(2, 10 * (t / d - 1)) + b;
+    },
+    Out: function(t, b, c, d) {
+      return c * (-Math.pow(2, -10 * t / d) + 1) + b;
+    },
+    InOut: function(t, b, c, d) {
+      t /= d / 2;
+      if (t < 1) {
+        return c / 2 * Math.pow(2, 10 * (t - 1)) + b;
+      }
+      t--;
+      return c / 2 * (-Math.pow(2, -10 * t) + 2) + b;
+    }
+  },
+  Circular: {
+    In: function(t, b, c, d) {
+      t /= d;
+      return -c * (Math.sqrt(1 - t * t) - 1) + b;
+    },
+    Out: function(t, b, c, d) {
+      t /= d;
+      t--;
+      return c * Math.sqrt(1 - t * t) + b;
+    },
+    InOut: function(t, b, c, d) {
+      t /= d / 2;
+      if (t < 1) {
+        return -c / 2 * (Math.sqrt(1 - t * t) - 1) + b;
+      }
+      t -= 2;
+      return c / 2 * (Math.sqrt(1 - t * t) + 1) + b;
+    }
+  }
+};
+
+
+
+},{}],18:[function(require,module,exports){
+var __slice = [].slice,
+  __hasProp = {}.hasOwnProperty;
+
+module.exports = function() {
+  var destination, key, source, sources, value, _i, _len;
+  destination = arguments[0], sources = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+  for (_i = 0, _len = sources.length; _i < _len; _i++) {
+    source = sources[_i];
+    for (key in source) {
+      if (!__hasProp.call(source, key)) continue;
+      value = source[key];
+      destination[key] = value;
+    }
+  }
+  return void 0;
+};
+
+
+
+},{}],19:[function(require,module,exports){
+(function (global){
+(function() {
+  var lastTime, vendor, vendors, _i, _len;
+  lastTime = 0;
+  vendors = ['ms', 'moz', 'webkit', 'o'];
+  if (!global.requestAnimationFrame) {
+    for (_i = 0, _len = vendors.length; _i < _len; _i++) {
+      vendor = vendors[_i];
+      global.requestAnimationFrame = global[vendor + 'RequestAnimationFrame'];
+      global.cancelAnimationFrame = global[vendor + 'CancelAnimationFrame'] || global[vendor + 'CancelRequestAnimationFrame'];
+    }
+  }
+  if (!global.requestAnimationFrame) {
+    global.requestAnimationFrame = function(callback, element) {
+      var currTime, id, timeToCall;
+      currTime = new Date().getTime();
+      timeToCall = Math.max(0, 16 - (currTime - lastTime));
+      id = global.setTimeout((function() {
+        return callback(currTime + timeToCall);
+      }), timeToCall);
+      lastTime = currTime + timeToCall;
+      return id;
+    };
+  }
+  if (!global.cancelAnimationFrame) {
+    global.cancelAnimationFrame = function(id) {
+      return clearTimeout(id);
+    };
+  }
+  return void 0;
+})();
+
+(function() {
+  var nowOffset, _ref;
+  if (global.performance == null) {
+    global.performance = {};
+  }
+  if (global.performance.now == null) {
+    nowOffset = Date.now();
+    if (((_ref = global.performance.timing) != null ? _ref.navigationStart : void 0) != null) {
       nowOffset = performance.timing.navigationStart;
     }
- 
- 
-    window.performance.now = function now(){
+    global.performance.now = function() {
       return Date.now() - nowOffset;
     };
- 
   }
- 
+  return void 0;
 })();
 
-(function (Entropy) {
-    "use strict";
 
-    var EventEmitter = Entropy.EventEmitter;
-    var Utils = Entropy.Utils;
 
-    var FPS = 60;
-    var MAX_FRAME_TIME = 1000 / FPS * 2;
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],20:[function(require,module,exports){
+var toString;
 
-    var _paused = false;
-    var _ticks = 0;
-    var _callbacks = [];
-    var raf = window.requestAnimationFrame;
-    var _last_time_value = 0;
-    var _is_running = false;
-    var _current_FPS = FPS;
-    var _raf_id = -1;
-    var _desired_delta = 1000 / FPS;
-    var _delta_sum = 0;
-    var event = {};
+toString = Object.prototype.toString;
 
-    function Ticker (game) {
-        this.game = game;
-
-        EventEmitter.call(this);
+module.exports = {
+  of: {
+    undefined: function(thing) {
+      return toString.call(thing) === '[object Undefined]';
+    },
+    "null": function(thing) {
+      return toString.call(thing) === '[object Null]';
+    },
+    string: function(thing) {
+      return toString.call(thing) === '[object String]';
+    },
+    number: function(thing) {
+      return toString.call(thing) === '[object Number]';
+    },
+    boolean: function(thing) {
+      return toString.call(thing) === '[object Boolean]';
+    },
+    "function": function(thing) {
+      return toString.call(thing) === '[object Function]';
+    },
+    array: function(thing) {
+      return toString.call(thing) === '[object Array]';
+    },
+    date: function(thing) {
+      return toString.call(thing) === '[object Date]';
+    },
+    regexp: function(thing) {
+      return toString.call(thing) === '[object RegExp]';
+    },
+    object: function(thing) {
+      return toString.call(thing) === '[object Object]';
     }
+  }
+};
 
-    Utils.extend(Ticker.prototype, EventEmitter.prototype);
 
-    Utils.extend(Ticker.prototype, {
-        setFPS: function (fps) {
-            FPS = fps || FPS;
-            _desired_delta = 1000 / FPS;
-        },
-        getFPS: function () {
-            return FPS;
-        },
-        getCurrentFPS: function () {
-            return Math.round(_current_FPS);
-        },
-        getTicks: function () {
-            return _ticks;
-        },
-        pause: function () {
-            _paused = true;
-        },
-        resume: function () {
-            if (_paused && !_is_running) {
-                _is_running = true;
-                _paused = false;
-                this.emit("resume");
-            }
-        },
-        start: function () {
-            if (_paused) {
-                this.resume();
-            } else if (_is_running) {
-                return;
-            } else {
-                _raf_id = raf(this._tick.bind(this));
-                this.emit("start");
 
-                return;  
-            }
-        },
-        stop: function () {
-            if (_raf_id !== -1) {
-                window.cancelAnimationFrame(_raf_id);
-                _paused = false;
-                _is_running = false;
-
-                this.emit("stop");
-            }
-        },
-        _tick: function (time) {
-            time = time || 0;
-            _raf_id= raf(this._tick.bind(this));
-
-            time = time || performance.now();
-
-            var delta = time - _last_time_value;
-
-            if (delta >= MAX_FRAME_TIME) {
-                delta = 1000 / FPS;
-            }
-
-            _last_time_value = time;
-
-            this.emit('ticker:raf', delta);
-
-            if (_paused) {
-                _is_running = false;
-                return;
-            }
-
-            if (FPS !== 60) {
-                _delta_sum += delta;
-
-                if (_delta_sum < _desired_delta) {
-                    return;
-                } else {
-                    delta = _delta_sum;
-                    _delta_sum = 0;
-                }
-            }
-
-            if (_ticks % FPS === 0) {
-                _current_FPS = 1000 / delta;
-            }
-
-            event.delta = delta;
-            event.ticks = _ticks;
-            event.time = time;
-            event.paused = _paused;
-
-            this.emit("tick", event);
-
-            _ticks++;
-        }
-    });
-
-    Entropy.Ticker = Ticker;
-
-})(root);
-
-(function (Entropy) {
-    "use strict";
-
-    var Utils = Entropy.Utils;
-    var EventEmitter = Entropy.EventEmitter;
-
-    function Entity (name, game) {
-        this.id = 0;
-        this.name = name;
-        this.pattern = {};
-        this.engine = game.engine;
-        this.game = game;
-        this.components = {};
-        this.recycled = false;
-        this.bitset = new BitSet(100);
-
-        this._inFinalState = false;
-        this._stateChanges = [];
-        this._stateObject = {};
-        this._currentStates = [];
-
-        this.engine.on("engine:updateFinished", this._applyStateChanges, this);
-    }
-
-    Utils.extend(Entity.prototype, {
-        add: function (name) {
-            var args = [];
-
-            if (arguments.length > 1) {
-                args = Utils.slice(arguments, 1);
-            }
-
-            var lowercase_name = name.toLowerCase();
-
-            var component_pattern = this.engine.getComponentPattern(name);
-        
-            if (!(lowercase_name in this.components)) {
-                this.components[lowercase_name] = this.engine.getNewComponent(name);
-            } else {
-                this.components[lowercase_name].deleted = false;
-            }
-
-            component_pattern.initialize.apply(
-                this.components[lowercase_name],
-                args
-            );
-
-            this.bitset.set(this.components[lowercase_name].bit);
-
-            //this.engine.setComponentsIndex(this.id, this.components[lowercase_name].id);
-
-            return this;
-        },
-
-        remove: function (name, soft_delete) {
-            var lowercase_name = name.toLowerCase();
-            
-            if (soft_delete && this.components[lowercase_name].deleted) {
-                //nothing to soft delete
-                return this;
-            }
-
-            if (lowercase_name in this.components) {
-                var component_pattern = this.engine.getComponentPattern(name);
-
-                if (!soft_delete) {
-                    this.engine.addComponentToPool(name, this.components[lowercase_name]);
-
-                    delete this.components[lowercase_name];
-                } else {
-                    this.components[lowercase_name].deleted = true;
-                }
-
-                this.bitset.clear(this.components[lowercase_name].bit);
-
-                //this.engine.unsetComponentsIndex(this.id, this.components[lowercase_name].id);
-            }
-
-            return this;
-        },
-
-        removeAllComponents: function (soft_delete) {
-            for (var lowercase_name in this.components) {
-                if (this.components.hasOwnProperty(lowercase_name)) {
-                    this.remove(this.components[lowercase_name].name, soft_delete);
-                }
-            }
-
-            return this;
-        },
-
-        setId: function (id) {
-            this.id = id;
-        },
-        getPattern: function () {
-            return this.pattern;
-        },
-        setPattern: function (pattern) {
-            this.pattern = pattern;
-        },
-
-        setRecycled: function () {
-            this.recycled = true;
-        },
-
-        addState: function (name, obj) {
-            if (!this.states.hasOwnProperty(name)) {
-                this.states[name] = obj;
-            } else {
-                app.Game.warning("such state already exists.");
-            }
-
-            return this;
-        },
-
-        enter: function (name) {
-            if (this._inFinalState) {
-                Entropy.log("entity " + this.name + " is in its final state.");
-                return this;
-            }
-
-            var args = Utils.slice(arguments, 1);
-
-            if (this.pattern.states && !this.pattern.states[name]) {
-                Entropy.warning("there is no state " + name + " for entity " + this.name);
-                return this;
-            }
-
-            var pattern = this.pattern.states[name];
-
-            if (pattern.excluding) {
-                this._exitAllStates();
-            }
-
-            this._stateChanges.push({
-                name: name,
-                action: "enter",
-                args: args
-            });
-
-            return this;
-        },
-        exit: function (name) {
-            if (this._inFinalState) {
-                Entropy.warning("entity " + this.name + " is in its final state.");
-
-                return this;
-            }
-
-            if (!this.in(name)) {
-                Entropy.warning("entity " + this.name + " is not in state " + name + ". No exiting required.");
-
-                return this;
-            }
-
-            var args = Utils.slice(arguments, 1);
-
-            this._stateChanges.push({
-                name: name,
-                action: "exit",
-                args: args
-            });
-
-            return this;
-        },
-        in: function () {
-            if (arguments.length === 0) {
-                return false;
-            }
-
-            var states = Utils.slice(arguments, 0);
-
-            for (var i = states.length - 1; i > -1; i--) {
-                var state = states[i];
-                if (this._currentStates.indexOf(state) === -1) {
-                    return false;
-                }
-            }
-
-            return true;
-        },
-        _getStatePattern: function (name) {
-            return this.engine._getStatePattern(this.name, name);
-        },
-        _exitAllStates: function () {
-            this._currentStates.forEach(function (state) {
-                this.exit(this.state);
-            }, this);
-
-            return this;
-        },
-        _applyStateChanges: function () {
-
-            var change;
-
-            while (change = this._stateChanges.shift()) {
-                if (this._inFinalState) {
-                    return;
-                }
-
-                if ("states" in this.pattern && change.name in this.pattern.states) {
-                    if (
-                        change.action === "enter" && this.in(change.name) ||
-                        change.action === "exit" && !this.in(change.name)
-                    ) {
-                        continue;
-                    }
-
-                    var pattern = this.pattern.states[change.name];
-
-                    this._stateObject[change.name] = this._stateObject[change.name] || {};
-
-                    change.args.unshift(this._stateObject[change.name]);
-
-                    pattern[change.action] && pattern[change.action].apply(this, change.args);
-
-                    if (change.action === "enter") {
-                        this._currentStates.push(change.name);
-                    } else if (change.action === "exit") {
-                        this._currentStates.splice(this._currentStates.indexOf(change.name), 1);
-                        delete this._stateObject[change.name];
-                    }
-
-                    if (pattern.final) {
-                        this._inFinalState = true;
-                    }
-                }
-            }
-        }
-    });
-
-    Entropy.Entity = Entity;
-
-})(root);
-
-(function (Entropy) {
-    var Entity = Entropy.Entity;
-    var Utils = Entropy.Utils;
-    /**
-     * Internal node constructor.
-     * @param {any} data any type of data, in most cases an Entity instance
-     * @private
-     * @constructor
-     */
-    function Node (data) {
-        this.data = data;
-        this.next = null;
-    }
-
-    Node.prototype = {
-        getComponents: function () {
-            return this.data.components;
-        }
-    };
-
-    /**
-     * Family implemented as singly linked list.
-     * @param {String} name Family name
-     * @constructor
-     */
-    function Family (name) {
-        /**
-         * Family name.
-         * @type {String}
-         */
-        this.name = name;
-
-        /**
-         * Linked list head. Null if list is empty.
-         * @type {Node|null}
-         */
-        this.head = null;
-
-        /**
-         * Helper variable indicating whether brake current iteration or not.
-         * @type {Boolean}
-         */
-        this.break_iteration = false;
-    }
-
-    Family.prototype = {
-        /**
-         * Appends data (entity) at the beginnig of the list. Appended node becomes new head.
-         * @param  {Entity} entity entity object
-         * @return {Family} Family instance
-         */
-        append: function (entity) {
-            var node = new Node(entity);
-
-            node.next = this.head;
-            this.head = node;
-
-            return this;
-        },
-
-        /**
-         * Removes given node/entity from the family.
-         * @param  {Node|Entity} data entity or node to remove
-         * @return {Family}      Family instance
-         */
-        remove: function (data) {
-            var node = this.findPrecedingNode(data);
-            
-            if (node === null) { //remove head
-                this.head = this.head.next;
-            } else if (node !== -1) {
-                var obolete_node = node.next;
-                node.next = node.next.next;
-                //prepare for removal by GC
-                obolete_node = null;
-            }
-        },
-
-        /**
-         * Finds node preceding given data.
-         * @param  {Node|Entity} data Entity or Node instance
-         * @returns {Node} if data is found
-         * @returns {null} if data is head
-         * @returns {Number} -1 if there is no such data
-         */
-        findPrecedingNode: function (data) {
-            //if data is head, there is no preceiding node, null returned
-            if (data instanceof Node && data === this.head ||
-                data instanceof Entity && this.head.data === data) {
-                return null;
-            }
-
-            var node = this.head;
-            while (node) {
-                if ((data instanceof Node && node.next === data) ||
-                    (data instanceof Entity && node.next !== null && node.next.data === data)) {
-                    return node;
-                }
-
-                node = node.next;
-            }
-
-            return -1;
-        },
-
-        /**
-         * Calls given callback for each node in the family.
-         * @param  {Function} fn      callback function
-         * @param  {object}   binding [description]
-         */
-        iterate: function (fn, binding) {
-            binding = binding || (function () { return this; })();
-            var args = Utils.slice(arguments, 2);
-
-            var node = this.head;
-
-            while (node) {
-                 fn.call(binding, node.data, node.data.components, node, this);
-
-                if (this.break_iteration) break;
-
-                node = node.next;
-            }
-
-            this.break_iteration = false;
-        },
-        breakIteration: function () {
-            this.break_iteration = true;
-        },
-        one: function () {
-            if (this.head == null) {
-                return null;
-            }
-            
-            return this.head.data;
-        }
-    };
-
-    Entropy.Family = Family;
-
-})(root);
-
-(function (Entropy) {
-    "use strict";
-
-    var Utils = Entropy.Utils;
-
-    var FN = 0, BINDING = 1, ARGS = 2;
-
-    var _queue = [];
-    var _states = {};
-    var _current_state = {
-        transitions: {}
-    };
-
-    var _consts = {};
-
-    function Game (starting_state) {
-        this.input = new Entropy.Input(this);
-        this.engine = new Entropy.Engine(this);
-        this.ticker = new Entropy.Ticker(this);
-
-        this.engine.on('engine:updateFinished', function () {
-            this.input.clearKeyTimes();
-        }, this);
-
-        this.ticker.on("tick", this.engine.update, this.engine);
-
-        this.changeState(starting_state);
-    }
-
-    Game.State = function (state) {
-        if (typeof state !== "object") {
-            Game.error("State must be an object.");
-            return;
-        }
-
-        if (!("transitions" in state)) {
-            state.transitions = {};
-        }
-
-        state.initialized = false;
-
-        _states[state.name] = state;
-    };
-
-    Game.log = function (message) {
-        console.log(["Entropy: ", message].join(" "));
-    };
-
-    Game.error = function (message) {
-        throw new Error(["Entropy: ", message].join(" "));
-    };
-
-    Game.warning = function (message) {
-        console.warn(["Entropy: ", message].join(" "));
-    };
-
-    Game.Const = function (name, value) {
-        if (typeof name !== "string" || name === "") {
-            Game.error("constans name should be non-empty string.");
-        }
-
-        name = name.toUpperCase();
-
-        if (Game.hasOwnProperty(name)) {
-            Game.error("can't define same constans twice.");
-        } else {
-            Object.defineProperty(Game, name, {
-                value: value
-            });
-        }
-    };
-
-    /**
-     * [dummy description]
-     * @param  {Function} done
-     * @return {[type]}
-     */
-    function dummy (done) {
-        done();
-    }
-
-    /**
-     * [shift description]
-     * @return {[type]}
-     */
-    function shift() {
-        if (typeof _queue[0] === "undefined") {
-            return;
-        }
-
-        var fn = _queue[0][FN] || dummy;
-        var binding = _queue[0][BINDING] || null;
-        var args = _queue[0][ARGS] || [];
-
-        _queue.shift();
-
-        args.push(next);
-        
-        fn.apply(binding, args);
-    }
-
-    /**
-     * [next description]
-     * @return {Function}
-     */
-    function next() {
-        shift();
-    }
-
-    /**
-     * [setCurrentState description]
-     * @param {[type]}   state
-     * @param {Function} callback
-     */
-    function setCurrentState (state, callback) {
-        _current_state = state;
-        callback();
-    }
-
-    Utils.extend(Game.prototype, {
-        changeState: function (name) {
-            var args = Utils.slice(arguments, 1);
-
-            var next_state = _states[name];
-
-            _current_state.onExit && _queue.push([_current_state.onExit, _current_state, [this]]);
-
-            if (!next_state.initialized) {
-                next_state.initialize && _queue.push([next_state.initialize, next_state, [this]]);
-
-                next_state.initialized = true;
-            }
-
-            if (name in _current_state.transitions) {
-                args.unshift(next_state);
-                args.unshift(this);
-
-                _queue.push([
-                    _current_state[_current_state.transitions[name]],
-                    _current_state,
-                    args.slice()
-                ]);
-
-                args.shift();
-                args.shift();
-            }
-
-            _queue.push([setCurrentState, null, [next_state]]);
-
-            args.unshift(this);
-
-            next_state.onEnter && _queue.push([next_state.onEnter, next_state, args]);
-
-            shift();
-        },
-        currentState: function () {
-            return _current_state.name;
-        },
-        setRenderer: function (renderer) {
-            this.renderer = renderer;
-        },
-        setStage: function (stage) {
-            this.stage = stage;
-        },
-        start: function () {
-            this.ticker.start();
-
-            Game.log("Game starded!");
-        },
-        pause: function () {
-            this.ticker.pause();
-
-            Game.log("Game paused!");
-        },
-        resume: function () {
-            this.ticker.resume();
-
-            Game.log("Game resumed!");
-        }
-    });
-
-    Entropy.Game = Game;
-})(root);
-
-(function (Entropy) {
-    "use strict";
-
-    var Utils = Entropy.Utils;
-    var EventEmitter = Entropy.EventEmitter;
-    var Entity = Entropy.Entity;
-    var Family = Entropy.Family;
-    var Pool = Entropy.Pool;
-    var OrderedLinkedList = Entropy.OrderedLinkedList;
-
-    var _componentPatterns = {};
-    var _systemPatterns = {};
-    var _entityPatterns = {};
-    var _can_modify = true;
-    var _next_component_id = 0;
-
-    function Engine (game) {
-        this.game = game;
-
-        this._greatestEntityId = 0;
-        this._entityIdsToReuse = [];
-        this._entities = [];
-        this._entitiesCount = 0;
-
-        this._searchingBitSet = new BitSet(100);
-        this._excludingBitSet = new BitSet(100);
-
-        this._componentsIndex = [];
-        this._componentsPool = new Pool();
-
-        this._entitiesPool = new Pool();
-
-        this._systems = new OrderedLinkedList();
-
-        this._families = {
-            none: new Family("none")
-        };
-
-        this._entity_to_family_mapping = [];
-
-        this._entitiesToRemove = [];
-
-        this.BLANK_FAMILY = new Family("empty");
-
-        this._updating = false;
-
-        _can_modify = false;
-
-        //initializing component pool
-        /*for (var i = 0; i < _next_component_id; i += 1) {
-            this._componentsPool[i] = [];
-        }*/
-        EventEmitter.call(this);
-
-        this.on("engine:updateFinished", this._removeMarkedEntities, this);
-    }
-
-    Engine.Component = function (component) {
-        if (!_can_modify) {
-            Entropy.Game.error("Entropy: you can't specify components during system work - do it before initialization.");
-        }
-
-        if (typeof component !== "object") {
-            Entropy.Game.error("Entropy: component should be plain object.");
-        }
-
-        if (typeof _componentPatterns[component.name] !== "undefined") {
-            Entropy.Game.error("Entropy: you can't specify same component twice.");
-        }
-
-        _componentPatterns[component.name] = {
-            bit: _next_component_id,
-            pattern: component
-        };
-
-        _next_component_id += 1;
-    };
-
-    Engine.System = function (system) {
-        if (!_can_modify) {
-            Entropy.Game.error("Entropy: you can't specify systems during system work - do it before initialization.");
-        }
-
-        if (typeof system !== "object") {
-            Entropy.Game.error("Entropy: system should be plain object.");
-        }
-
-        if (typeof _systemPatterns[system.name] !== "undefined") {
-            Entropy.Game.error("Entropy: you can't specify same system twice.");
-        }
-
-        _systemPatterns[system.name] = system;
-    };
-
-    Engine.Entity = function (entity) {
-        if (entity.family === "") {
-            family = "none";
-        }
-
-        _entityPatterns[entity.name] = {
-            families: entity.family.split("|"),
-            pattern: entity
-        };
-    };
-
-    Utils.extend(Engine.prototype, EventEmitter.prototype);
-
-    Utils.extend(Engine.prototype, {
-        canModify: function () {
-            return _can_modify;
-        },
-        isUpdating: function () {
-            return this._updating;
-        },
-        getComponentPoolSize: function () {
-            return this._componentsPool.size();
-        },
-        getComponentPattern: function (name) {
-            return _componentPatterns[name].pattern;
-        },
-        getNewComponent: function (name) {
-            var bit = _componentPatterns[name].bit;
-
-            if (this._componentsPool.has(bit)) {
-                var component = this._componentsPool.pop(bit);
-                component.deleted = false;
-
-                return component;
-            } else {
-                return {
-                    bit: bit,
-                    name: name,
-                    deleted: false
-                };
-            }
-        },
-        addComponentToPool: function (name, obj) {
-            return this._componentsPool.push(_componentPatterns[name].bit, obj);
-        },
-        setComponentsIndex: function (entityId, componentId) {
-            this._componentsIndex[entityId][componentId] = true;
-        },
-        unsetComponentsIndex: function (entityId, componentId) {
-            this._componentsIndex[entityId][componentId] = false;
-        },
-        create: function (name) {
-            var args = Utils.slice(arguments, 1);
-            args.unshift(this.game);
-
-            var entity = this._getNewEntity(name);
-            var pattern = this._getEntityPattern(name);
-
-            pattern.create.apply(entity, args);
-
-            this._addEntityToFamilies(entity);
-            this._addEntityToEngine(entity);
-
-            return this;
-        },
-        remove: function (entity) {
-            //already removed
-            if (Utils.isUndefined(this._entities[entity.id])) {          
-                return;
-            }
-
-            var args = Utils.slice(arguments, 2);
-            args.unshift(this.game);
-
-            var pattern = entity.getPattern();
-
-            pattern.remove && pattern.remove.apply(entity, args);
-
-            this._removeEntityFromFamilies(entity);
-            entity.removeAllComponents(true);
-
-            this._entitiesPool.push(entity.name, entity);
-
-            delete this._entities[entity.id];
-            delete this._entity_to_family_mapping[entity.id];
-
-            this._entityIdsToReuse.push(entity.id);
-
-            this._entitiesCount -= 1;
-
-            return this;
-        },
-        removeAllEntities: function () {
-            if ( ! this.isUpdating()) {
-                this._entities.forEach(function (entity) {
-                    this.remove(entity);
-                }, this);
-            } else {
-                Entropy.Game.warning("entities couldn't be removed because engine's still running.");
-            }
-
-            return this;
-        },
-        markForRemoval: function (entity) {
-            this._entitiesToRemove.push(entity);
-        },
-        getEntity: function (id) {
-            if (!Utils.isUndefined(this._entities[id])) {
-                return this._entities[id];
-            } else {
-                return null;
-            }
-        },
-        getEntitiesWith: function (components) {
-            var matchedEntities = [];
-
-            this._searchingBitSet.clear();
-            this._excludingBitSet.clear();
-
-            if (!Utils.isArray(components) && Utils.isObject(components)) {
-                components.without && components.without.forEach(function (component) {
-                    this._excludingBitSet.set(_componentPatterns[component].bit);
-                }, this);
-
-                components = components.with;
-            }
-
-            if (Utils.isArray(components)) {
-                components.forEach(function (component) {
-                    this._searchingBitSet.set(_componentPatterns[component].bit);
-                }, this);
-            }
-
-            for (var entityId = 0, max = this._entities.length; entityId < max; entityId += 1) {
-                if (
-                    !Utils.isUndefined(this._entities[entityId]) &&
-                    this._searchingBitSet.subsetOf(this._entities[entityId].bitset) &&
-                    this._excludingBitSet.and(this._entities[entityId].bitset).isEmpty()
-                ) {
-                    matchedEntities.push(this._entities[entityId]);
-                }
-            }
-
-            return matchedEntities;
-        },
-        getEntitiesByName: function (names) {
-
-        },
-        getAllEntities: function () {
-            return this._entities.map(function (entity) {
-                return entity;
-            });
-        },
-        getFamily: function (family) {
-            if (!Utils.isString(family)) {
-                Entropy.Game.error("Family name must be a string.");
-            }
-
-            if (family in this._families) {
-                return this._families[family];
-            } else {
-                return this.BLANK_FAMILY;
-            }
-        },
-        addSystem: function (name, priority) {
-            var args = Utils.slice(arguments, 2);
-            var pattern = _systemPatterns[name];
-
-            var system = {};
-
-            system.game = this.game;
-            system.engine = this;
-
-            Utils.extend(system, pattern);
-
-            pattern.initialize && pattern.initialize.apply(system, args);
-
-            this._systems.insert(system, priority);
-
-            return this;
-        },
-        addSystems: function () {
-            for (var i = 0; i < arguments.length; i += 1) {
-                this.addSystem.apply(this, arguments[i]);
-            }
-
-            return this;
-        },
-        removeSystem: function (system) {
-            if ( ! this.isUpdating()) {
-                var args = Utils.slice(arguments, 1);
-                var pattern = _systemPatterns[system.name];
-
-                pattern.remove && pattern.remove.apply(system, args);
-
-                this._systems.remove(system);
-            }
-
-            return this;
-        },
-        removeAllSystems: function () {
-            while (this._systems.head) {
-                this.removeSystem(this._systems.head.data);
-            }
-
-            return this;
-        },
-        clear: function () {
-            this.once("engine:updateFinished", function (e) {
-                this.removeAllSystems();
-                this.removeAllEntities();
-            }, this);
-        },
-        isSystemActive: function (name) {
-            var node = this._systems.head;
-
-            while (node) {
-                if (node.data.name === name) {
-                    return true;
-                }
-
-                node = node.next;
-            }
-
-            return false;
-        },
-        update: function (event) {
-            var delta = event.delta;
-
-            this._beforeUpdate(delta, event);
-
-            this._updating = true;
-
-            var node = this._systems.head;
-            while (node) {
-                node.data.update(delta, event);
-                node = node.next;
-            }
-
-            this._updating = false;
-
-            this._afterUpdate(delta, event);
-
-            this.emit("engine:updateFinished", null);
-        },
-        _beforeUpdate: function (delta, event) {
-            var node = this._systems.head;
-            while (node) {
-                node.data.beforeUpdate && node.data.beforeUpdate(delta, event);
-
-                node = node.next;
-            }
-        },
-        _afterUpdate: function (delta, event) {
-            var node = this._systems.head;
-            while (node) {
-                node.data.afterUpdate && node.data.afterUpdate(delta, event);
-
-                node = node.next;
-            }
-        },
-        _removeMarkedEntities: function () {
-            for (var i = 0, max = this._entitiesToRemove.length; i < max; i++) {
-                this.remove(this._entitiesToRemove[i]);
-            }
-
-            this._entitiesToRemove.length = 0;
-        },
-        _createComponentsIndex: function (entityId) {
-            this._componentsIndex[entityId] = [];
-
-            for (var i = 0; i < _next_component_id; i += 1) {
-                this._componentsIndex[entityId][i] = false;
-            }
-        },
-        _addEntityToFamilies: function (entity) {
-            var families = this._getFamiliesOfEntity(entity.name);
-
-            for (var i = 0, max = families.length; i < max; i += 1) {
-                var family = families[i];
-
-                if (!(family in this._families)) {
-                    this._families[family] = new Family(family);
-                }
-
-                this._families[family].append(entity);
-            }
-        },
-        _removeEntityFromFamilies: function (entity) {
-            var families = this._getFamiliesOfEntity(entity.name);
-
-            for (var i = 0, max = families.length; i < max; i += 1) {
-                var family = families[i];
-                
-                this._families[family].remove(entity);
-            }
-        },
-        _getFamiliesOfEntity: function(name) {
-            return _entityPatterns[name].families;
-        },
-
-        /*_createPoolForEntity: function (name) {
-            if (!this._entitiesPool.hasOwnProperty(name)) {
-                this._entitiesPool[name] = [];
-            }
-        }*/
-        _addEntityToEngine: function (entity) {
-            this._entities[entity.id] = entity;
-
-            this._entitiesCount += 1;
-        },
-        _getIdForNewEntity: function () {
-            var id;
-
-            if (this._entityIdsToReuse.length !== 0) {
-                id = this._entityIdsToReuse.pop();
-            } else {
-                id = this._greatestEntityId;
-                this._greatestEntityId += 1;
-
-                this._createComponentsIndex(id);
-            }
-
-            return id;
-        },
-        _getNewEntity: function (name) {
-            var entity = this._entitiesPool.pop(name);
-
-            if (!entity) {
-                entity = new Entity(name, this.game);   
-                entity.setPattern(this._getEntityPattern(name));
-            }
-
-            entity.setId(this._getIdForNewEntity());
-
-            return entity;
-        },
-        _getEntityPattern: function (name) {
-            if (name in _entityPatterns) {
-                return _entityPatterns[name].pattern;
-            } else {
-                Entropy.Game.error(["pattern for entity", name, "does not exist."].join(" "));
-            }
-        }
-    });
-
-
-    Entropy.Engine = Engine;
-
-})(root);
-
-(function (Entropy) {
-    //var key_names = ["BACKSPACE", "TAB", "ENTER", "SHIFT", "CTRL", "ALT", "PAUSE_BREAK", "CAPS_LOCK ", "ESCAPE", "SPACE", "PAGE_UP", "PAGE_DOWN", "END", "HOME", "LEFT_ARROW", "UP_ARROW", "RIGHT_ARROW", "DOWN_ARROW", "INSERT", "DELETE", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "LEFT_WINDOW_KEY", "RIGHT_WINDOW_KEY", "SELECT_KEY", "NUMPAD_0", "NUMPAD_1", "NUMPAD_2", "NUMPAD_3", "NUMPAD_4", "NUMPAD_5", "NUMPAD_6", "NUMPAD_7", "NUMPAD_8", "NUMPAD_9", "MULTIPLY", "ADD", "SUBTRACT", "DECIMAL_POINT", "DIVIDE", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F1", "F11", "F12", "NUM_LOCK", "SCROLL_LOCK", "SEMI_COLON", "EQUAL_SIGN", "COMMA", "DASH", "PERIOD", "FORWARD_SLASH", "GRAVE_ACCENT", "OPEN_BRACKET", "BACK_SLASH", "CLOSE_BRAKET", "SINGLE_QUOTE"];
-
-    var _keys = {
-        "BACKSPACE": 8,
-        "TAB": 9,
-        "ENTER": 13,
-        "SHIFT": 16,
-        "CTRL": 17,
-        "ALT": 18,
-        "PAUSE_BREAK": 19,
-        "CAPS_LOCK ": 20,
-        "ESCAPE": 27,
-        "SPACE": 32,
-        "PAGE_UP": 33,
-        "PAGE_DOWN": 34,
-        "END": 35,
-        "HOME": 36,
-        "LEFT_ARROW": 37,
-        "UP_ARROW": 38,
-        "RIGHT_ARROW": 39,
-        "DOWN_ARROW": 40,
-        "INSERT": 45,
-        "DELETE": 46,
-        "0": 48,
-        "1": 49,
-        "2": 50,
-        "3": 51,
-        "4": 52,
-        "5": 53,
-        "6": 54,
-        "7": 55,
-        "8": 56,
-        "9": 57,
-        "A": 65,
-        "B": 66,
-        "C": 67,
-        "D": 68,
-        "E": 69,
-        "F": 70,
-        "G": 71,
-        "H": 72,
-        "I": 73,
-        "J": 74,
-        "K": 75,
-        "L": 76,
-        "M": 77,
-        "N": 78,
-        "O": 79,
-        "P": 80,
-        "Q": 81,
-        "R": 82,
-        "S": 83,
-        "T": 84,
-        "U": 85,
-        "V": 86,
-        "W": 87,
-        "X": 88,
-        "Y": 89,
-        "Z": 90,
-        "LEFT_WINDOW_KEY": 91,
-        "RIGHT_WINDOW_KEY": 92,
-        "SELECT_KEY": 93,
-        "NUMPAD_0": 96,
-        "NUMPAD_1": 97,
-        "NUMPAD_2": 98,
-        "NUMPAD_3": 99,
-        "NUMPAD_4": 100,
-        "NUMPAD_5": 101,
-        "NUMPAD_6": 102,
-        "NUMPAD_7": 103,
-        "NUMPAD_8": 104,
-        "NUMPAD_9": 105,
-        "MULTIPLY": 106,
-        "ADD": 107,
-        "SUBTRACT": 109,
-        "DECIMAL_POINT": 110,
-        "DIVIDE": 111,
-        "F1": 112,
-        "F2": 113,
-        "F3": 114,
-        "F4": 115,
-        "F5": 116,
-        "F6": 117,
-        "F7": 118,
-        "F8": 119,
-        "F9": 120,
-        "F10": 121,
-        "F11": 122,
-        "F12": 123,
-        "NUM_LOCK": 144,
-        "SCROLL_LOCK": 145,
-        "SEMI_COLON": 186,
-        "EQUAL_SIGN": 187,
-        "COMMA": 188,
-        "DASH": 189,
-        "PERIOD": 190,
-        "FORWARD_SLASH": 191,
-        "GRAVE_ACCENT": 192,
-        "OPEN_BRACKET": 219,
-        "BACK_SLASH": 220,
-        "CLOSE_BRACKET": 221,
-        "SINGLE_QUOTE": 222
-    };
-
-    var _pressed_keys = [];
-    var _pressed_keys_time = [];
-    var _once_pressed_keys = [];
-    var _mouse_position = {
-        x: 0,
-        y: 0
-    };
-
-    function Input (game) {
-        this.game = game;
-
-        for (var i = 0; i < 256; i++) {
-            _pressed_keys[i] = false;
-        }
-
-        window.addEventListener("keydown", function (e) {
-            _pressed_keys[e.keyCode] = true;
-
-            if (!_pressed_keys_time[e.keyCode]) {
-                _pressed_keys_time[e.keyCode] = performance.now();
-            }
-        });
-
-        window.addEventListener("keyup", function (e) {
-            _pressed_keys[e.keyCode] = false;
-
-            if (typeof _pressed_keys_time[e.keyCode] !== 'undefined' && typeof _once_pressed_keys[e.keyCode] === 'undefined') {
-                _pressed_keys_time[e.keyCode] = performance.now() - _pressed_keys_time[e.keyCode];
-                _once_pressed_keys[e.keyCode] = true;
-            }
-        });
-    }
-
-    Input.prototype = {
-        isPressed: function (name) {
-            return _pressed_keys[_keys[name]];
-        },
-        getPressedKeys: function () {
-            var keys = {};
-
-            for (var name in _keys) {
-                keys[name] = _pressed_keys[_keys[name]];
-            }
-
-            return keys;
-        },
-        getKeysPressedLessThan: function (time) {
-            var keys = {};
-
-            for (var name in _keys) {
-                var keyCode = _keys[name];
-
-                if (_pressed_keys_time[keyCode] < time && _once_pressed_keys[keyCode]) {
-                    keys[name] = true;
-                }
-            }
-
-            return keys;
-        },
-        setMouseStagePosition: function (position) {
-            _mouse_position = position;
-        },
-        getMouseStagePosition: function () {
-            return _mouse_position;
-        },
-        clearKeyTimes: function () {
-            _pressed_keys_time = [];
-            _once_pressed_keys = [];
-        }
-    };
-
-    Entropy.Input = Input;
-})(root);
-
-    if (typeof define === "function" && define.amd) {
-        define(function () {
-            return root;
-        });
-    } else if (typeof module === "object" && module.exports) {
-        module.exports = root;
-    } else {
-        this.Entropy = root;
-    }
-})();
+},{}]},{},[15])(15)
+});

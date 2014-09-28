@@ -12,7 +12,7 @@ Entropy.Engine.System({
 
         this.clearFoV();
 
-        tiles.iterate(function (t, tc) {
+        tiles.iterate(function (node, e, tc) {
            this.renderTile(tc, fov);
         }, this);
 
